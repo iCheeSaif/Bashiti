@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Insulin Log</title>
+<title>سجل الإنسولين</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
 <style>
   :root{
     --paper:#F4F6F8;
@@ -28,8 +28,8 @@
   body{
     background:var(--paper);
     color:var(--ink);
-    font-family:"Inter",system-ui,sans-serif;
-    line-height:1.5;
+    font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;
+    line-height:1.6;
     -webkit-font-smoothing:antialiased;
     padding:0 16px 64px;
   }
@@ -37,7 +37,7 @@
 
   /* Header */
   header{
-    display:flex;align-items:baseline;justify-content:space-between;
+    display:flex;align-items:center;justify-content:space-between;
     gap:12px;padding:28px 0 20px;flex-wrap:wrap;
   }
   .brand{display:flex;align-items:center;gap:12px;}
@@ -49,12 +49,11 @@
   }
   .vial::before{content:"";position:absolute;top:-6px;left:5px;right:5px;height:5px;background:var(--ink);border-radius:2px;}
   h1{
-    font-family:"Space Grotesk",sans-serif;
-    font-weight:600;font-size:1.4rem;letter-spacing:-.01em;margin:0;
+    font-weight:700;font-size:1.4rem;letter-spacing:-.01em;margin:0;
   }
   .status{
     font-family:"IBM Plex Mono",monospace;font-size:.72rem;
-    color:var(--ink-soft);display:flex;align-items:center;gap:7px;
+    color:var(--ink-soft);display:flex;align-items:center;gap:7px;direction:ltr;
   }
   .dot{width:8px;height:8px;border-radius:50%;background:var(--other);}
   .dot.on{background:var(--accent);}
@@ -65,7 +64,7 @@
     border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;
     font-size:.9rem;display:none;
   }
-  .banner code{font-family:"IBM Plex Mono",monospace;background:#0000000d;padding:1px 5px;border-radius:4px;}
+  .banner code{font-family:"IBM Plex Mono",monospace;background:#0000000d;padding:1px 5px;border-radius:4px;direction:ltr;display:inline-block;}
 
   /* Summary */
   .summary{
@@ -75,9 +74,9 @@
     flex:1;min-width:120px;background:var(--card);border:1px solid var(--line);
     border-radius:var(--radius);padding:14px 16px;
   }
-  .stat .k{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-soft);}
-  .stat .v{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:1.5rem;margin-top:2px;}
-  .stat .v small{font-size:.8rem;color:var(--ink-soft);font-weight:500;}
+  .stat .k{font-size:.74rem;color:var(--ink-soft);}
+  .stat .v{font-family:"IBM Plex Mono",monospace;font-weight:600;font-size:1.5rem;margin-top:2px;direction:ltr;}
+  .stat .v small{font-size:.8rem;color:var(--ink-soft);font-weight:500;font-family:"IBM Plex Sans Arabic",sans-serif;}
 
   /* Card / form */
   .card{
@@ -86,14 +85,13 @@
     padding:20px;margin-bottom:24px;
   }
   .card h2{
-    font-family:"Space Grotesk",sans-serif;font-size:.8rem;font-weight:600;
-    text-transform:uppercase;letter-spacing:.08em;color:var(--ink-soft);
+    font-size:.85rem;font-weight:700;color:var(--ink-soft);
     margin:0 0 16px;
   }
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
   .field{display:flex;flex-direction:column;gap:6px;}
   .field.full{grid-column:1 / -1;}
-  label{font-size:.78rem;font-weight:500;color:var(--ink-soft);}
+  label{font-size:.82rem;font-weight:500;color:var(--ink-soft);}
   input,select{
     font-family:inherit;font-size:.95rem;color:var(--ink);
     background:var(--paper);border:1px solid var(--line);border-radius:9px;
@@ -114,10 +112,10 @@
   .seg button.other[aria-pressed="true"]{background:var(--other);}
 
   .btn{
-    font-family:"Space Grotesk",sans-serif;font-weight:600;font-size:.95rem;
+    font-weight:700;font-size:.95rem;
     color:#fff;background:var(--accent);border:none;border-radius:10px;
     padding:13px 18px;cursor:pointer;width:100%;margin-top:4px;
-    transition:background .15s ease;
+    transition:background .15s ease;font-family:inherit;
   }
   .btn:hover{background:var(--accent-dark);}
   .btn:focus-visible{outline:2px solid var(--ink);outline-offset:2px;}
@@ -126,34 +124,35 @@
   /* Log */
   .daygroup{margin-bottom:22px;}
   .dayhead{
-    font-family:"Space Grotesk",sans-serif;font-size:.76rem;font-weight:600;
-    text-transform:uppercase;letter-spacing:.07em;color:var(--ink-soft);
+    font-size:.8rem;font-weight:600;color:var(--ink-soft);
     padding:0 4px 8px;display:flex;justify-content:space-between;
   }
+  .dayhead .du{font-family:"IBM Plex Mono",monospace;direction:ltr;}
   .entry{
-    background:var(--card);border:1px solid var(--line);border-left:4px solid var(--other);
+    background:var(--card);border:1px solid var(--line);
+    border-inline-start:4px solid var(--other);
     border-radius:12px;padding:14px 16px;margin-bottom:8px;
     display:flex;align-items:center;gap:14px;
   }
-  .entry.rapid{border-left-color:var(--rapid);}
-  .entry.long{border-left-color:var(--long);}
+  .entry.rapid{border-inline-start-color:var(--rapid);}
+  .entry.long{border-inline-start-color:var(--long);}
   .readout{
     font-family:"IBM Plex Mono",monospace;font-weight:600;
     font-size:1.55rem;line-height:1;letter-spacing:-.02em;
-    font-variant-numeric:tabular-nums;min-width:62px;text-align:right;
+    font-variant-numeric:tabular-nums;min-width:62px;text-align:start;direction:ltr;
   }
-  .readout small{font-size:.65rem;color:var(--ink-soft);margin-left:2px;}
+  .readout small{font-size:.65rem;color:var(--ink-soft);margin-inline-start:2px;font-family:"IBM Plex Sans Arabic",sans-serif;}
   .meta{flex:1;min-width:0;}
   .meta .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   .chip{
-    font-size:.68rem;font-weight:600;padding:2px 8px;border-radius:999px;
-    text-transform:uppercase;letter-spacing:.04em;color:#fff;background:var(--other);
+    font-size:.7rem;font-weight:600;padding:2px 8px;border-radius:999px;
+    color:#fff;background:var(--other);
   }
   .chip.rapid{background:var(--rapid);}
   .chip.long{background:var(--long);}
   .name{font-weight:600;font-size:.95rem;}
-  .time{font-family:"IBM Plex Mono",monospace;font-size:.74rem;color:var(--ink-soft);}
-  .sub{font-size:.82rem;color:var(--ink-soft);margin-top:3px;}
+  .time{font-family:"IBM Plex Mono",monospace;font-size:.74rem;color:var(--ink-soft);direction:ltr;}
+  .sub{font-size:.84rem;color:var(--ink-soft);margin-top:3px;}
   .del{
     flex:none;border:none;background:none;cursor:pointer;color:var(--ink-soft);
     font-size:1.1rem;padding:6px;border-radius:8px;line-height:1;
@@ -161,9 +160,9 @@
   .del:hover{color:var(--danger);background:#C0392B12;}
 
   .empty{
-    text-align:center;color:var(--ink-soft);padding:40px 16px;font-size:.92rem;
+    text-align:center;color:var(--ink-soft);padding:40px 16px;font-size:.95rem;
   }
-  footer{text-align:center;color:var(--ink-soft);font-size:.74rem;padding:8px 0;}
+  footer{text-align:center;color:var(--ink-soft);font-size:.78rem;padding:8px 0;}
 
   @media (max-width:520px){
     .grid{grid-template-columns:1fr;}
@@ -178,58 +177,58 @@
   <header>
     <div class="brand">
       <div class="vial" aria-hidden="true"></div>
-      <h1>Insulin Log</h1>
+      <h1>سجل الإنسولين</h1>
     </div>
-    <div class="status"><span class="dot" id="dot"></span><span id="statusText">connecting…</span></div>
+    <div class="status"><span class="dot" id="dot"></span><span id="statusText">جارٍ الاتصال…</span></div>
   </header>
 
   <div class="banner" id="banner">
-    Firebase not set up. Paste your project config into <code>firebaseConfig</code> in this file's script.
+    لم يتم إعداد Firebase. الصِق إعدادات مشروعك في <code>firebaseConfig</code> داخل سكربت هذا الملف.
   </div>
 
   <div class="summary">
-    <div class="stat"><div class="k">Today · total</div><div class="v" id="sumUnits">0<small> U</small></div></div>
-    <div class="stat"><div class="k">Today · doses</div><div class="v" id="sumDoses">0</div></div>
+    <div class="stat"><div class="k">اليوم · الإجمالي</div><div class="v" id="sumUnits">0<small> و</small></div></div>
+    <div class="stat"><div class="k">اليوم · الجرعات</div><div class="v" id="sumDoses">0</div></div>
   </div>
 
   <div class="card">
-    <h2>Log a dose</h2>
+    <h2>تسجيل جرعة</h2>
     <div class="grid">
       <div class="field full">
-        <label>Category</label>
+        <label>النوع</label>
         <div class="seg" id="seg">
-          <button type="button" class="rapid" data-cat="rapid" aria-pressed="true">Rapid-acting</button>
-          <button type="button" class="long" data-cat="long" aria-pressed="false">Long-acting</button>
-          <button type="button" class="other" data-cat="other" aria-pressed="false">Other</button>
+          <button type="button" class="rapid" data-cat="rapid" aria-pressed="true">سريع المفعول</button>
+          <button type="button" class="long" data-cat="long" aria-pressed="false">طويل المفعول</button>
+          <button type="button" class="other" data-cat="other" aria-pressed="false">أخرى</button>
         </div>
       </div>
       <div class="field">
-        <label for="units">Units (U)</label>
+        <label for="units">الوحدات (و)</label>
         <input class="units-input" id="units" type="number" step="0.5" min="0" inputmode="decimal" placeholder="0" />
       </div>
       <div class="field">
-        <label for="when">Time</label>
+        <label for="when">الوقت</label>
         <input id="when" type="datetime-local" />
       </div>
       <div class="field">
-        <label for="name">Insulin name <span style="font-weight:400">(optional)</span></label>
-        <input id="name" type="text" placeholder="e.g. Humalog" autocomplete="off" />
+        <label for="name">اسم الإنسولين <span style="font-weight:400">(اختياري)</span></label>
+        <input id="name" type="text" placeholder="مثال: هومالوج" autocomplete="off" />
       </div>
       <div class="field">
-        <label for="glucose">Glucose <span style="font-weight:400">(optional)</span></label>
-        <input id="glucose" type="number" step="0.1" min="0" inputmode="decimal" placeholder="reading" />
+        <label for="glucose">سكر الدم <span style="font-weight:400">(اختياري)</span></label>
+        <input id="glucose" type="number" step="0.1" min="0" inputmode="decimal" placeholder="القراءة" />
       </div>
       <div class="field full">
-        <label for="note">Note <span style="font-weight:400">(optional)</span></label>
-        <input id="note" type="text" placeholder="before lunch, correction…" autocomplete="off" />
+        <label for="note">ملاحظة <span style="font-weight:400">(اختياري)</span></label>
+        <input id="note" type="text" placeholder="قبل الغداء، تصحيح…" autocomplete="off" />
       </div>
     </div>
-    <button class="btn" id="save" disabled>Log dose</button>
+    <button class="btn" id="save" disabled>تسجيل الجرعة</button>
   </div>
 
-  <div id="log"><div class="empty">No doses logged yet.</div></div>
+  <div id="log"><div class="empty">لا توجد جرعات مسجّلة بعد.</div></div>
 
-  <footer>Personal record only. Not medical advice.</footer>
+  <footer>سجل شخصي فقط. ليس نصيحة طبية.</footer>
 </div>
 
 <script type="module">
@@ -240,8 +239,8 @@
     query, orderBy, onSnapshot, serverTimestamp, Timestamp
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ===== 1. PASTE YOUR FIREBASE CONFIG HERE =====
-const firebaseConfig = {
+  // ===== 1. ضع إعدادات Firebase هنا =====
+  const firebaseConfig = {
   apiKey: "AIzaSyDLAV3MNFDOrYlDbVTaa0HyHjlfhjtbE2I",
   authDomain: "insulin-7766a.firebaseapp.com",
   projectId: "insulin-7766a",
@@ -250,21 +249,20 @@ const firebaseConfig = {
   appId: "1:739171138727:web:8ab0de419a8c3f1fdd6f82",
   measurementId: "G-Z4PKYWR6MF"
 };
-
-  // ==============================================
+  // ======================================
 
   const $ = (id) => document.getElementById(id);
   const dot = $("dot"), statusText = $("statusText");
 
   if (firebaseConfig.apiKey === "YOUR_API_KEY") {
     $("banner").style.display = "block";
-    statusText.textContent = "no config";
+    statusText.textContent = "لا يوجد إعداد";
   }
 
   let db, uid = null;
   let selectedCat = "rapid";
 
-  // Category selector
+  // اختيار النوع
   $("seg").addEventListener("click", (e) => {
     const b = e.target.closest("button[data-cat]");
     if (!b) return;
@@ -272,14 +270,14 @@ const firebaseConfig = {
     [...$("seg").children].forEach(x => x.setAttribute("aria-pressed", x === b));
   });
 
-  // Default time = now (local)
+  // الوقت الافتراضي = الآن
   function nowLocal(){
     const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
     return d.toISOString().slice(0,16);
   }
   $("when").value = nowLocal();
 
-  // Init Firebase
+  // تهيئة Firebase
   try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
@@ -288,7 +286,7 @@ const firebaseConfig = {
       if (user) { uid = user.uid; ready(); }
     });
     signInAnonymously(auth).catch(err => {
-      statusText.textContent = "auth error";
+      statusText.textContent = "خطأ مصادقة";
       console.error(err);
     });
   } catch (err) {
@@ -297,12 +295,12 @@ const firebaseConfig = {
 
   function ready(){
     dot.classList.add("on");
-    statusText.textContent = "synced · " + uid.slice(0,6);
+    statusText.textContent = "متصل · " + uid.slice(0,6);
     $("save").disabled = false;
     watch();
   }
 
-  // Save dose
+  // حفظ الجرعة
   $("save").addEventListener("click", async () => {
     const units = parseFloat($("units").value);
     if (!units || units <= 0) { $("units").focus(); return; }
@@ -326,13 +324,13 @@ const firebaseConfig = {
       $("when").value = nowLocal();
     } catch (err) {
       console.error(err);
-      alert("Could not save. Check Firestore rules and connection.");
+      alert("تعذّر الحفظ. تحقق من قواعد Firestore والاتصال.");
     } finally {
       $("save").disabled = false;
     }
   });
 
-  // Live read
+  // قراءة مباشرة
   function watch(){
     const q = query(collection(db, "users", uid, "doses"), orderBy("taken", "desc"));
     onSnapshot(q, (snap) => {
@@ -341,32 +339,32 @@ const firebaseConfig = {
       render(rows);
     }, (err) => {
       console.error(err);
-      statusText.textContent = "read error";
+      statusText.textContent = "خطأ قراءة";
     });
   }
 
-  const CAT_LABEL = { rapid: "Rapid", long: "Long", other: "Other" };
+  const CAT_LABEL = { rapid: "سريع", long: "طويل", other: "أخرى" };
   const fmtNum = (n) => Number.isInteger(n) ? n : n.toFixed(1);
 
   function render(rows){
     const log = $("log");
 
-    // Today summary
+    // ملخص اليوم
     const today = new Date(); today.setHours(0,0,0,0);
     let tUnits = 0, tDoses = 0;
     rows.forEach(r => {
       const t = r.taken?.toDate?.();
       if (t && t >= today) { tUnits += r.units || 0; tDoses++; }
     });
-    $("sumUnits").innerHTML = fmtNum(tUnits) + "<small> U</small>";
+    $("sumUnits").innerHTML = fmtNum(tUnits) + "<small> و</small>";
     $("sumDoses").textContent = tDoses;
 
     if (!rows.length) {
-      log.innerHTML = '<div class="empty">No doses logged yet.</div>';
+      log.innerHTML = '<div class="empty">لا توجد جرعات مسجّلة بعد.</div>';
       return;
     }
 
-    // Group by day
+    // تجميع حسب اليوم
     const groups = {};
     rows.forEach(r => {
       const t = r.taken?.toDate?.() || new Date();
@@ -382,7 +380,7 @@ const firebaseConfig = {
       g.className = "daygroup";
       const head = document.createElement("div");
       head.className = "dayhead";
-      head.innerHTML = `<span>${dayLabel(items[0].t)}</span><span>${fmtNum(dayUnits)} U</span>`;
+      head.innerHTML = `<span>${dayLabel(items[0].t)}</span><span class="du">${fmtNum(dayUnits)} و</span>`;
       g.appendChild(head);
 
       items.forEach(({ r, t }) => {
@@ -390,20 +388,20 @@ const firebaseConfig = {
         const el = document.createElement("div");
         el.className = "entry " + cat;
         el.innerHTML = `
-          <div class="readout">${fmtNum(r.units)}<small>U</small></div>
+          <div class="readout">${fmtNum(r.units)}<small>و</small></div>
           <div class="meta">
             <div class="top">
-              <span class="chip ${cat}">${CAT_LABEL[cat] || "Other"}</span>
+              <span class="chip ${cat}">${CAT_LABEL[cat] || "أخرى"}</span>
               ${r.name ? `<span class="name">${esc(r.name)}</span>` : ""}
               <span class="time">${timeLabel(t)}</span>
             </div>
             ${(r.glucose != null || r.note) ? `<div class="sub">${
-              r.glucose != null ? `Glucose ${fmtNum(r.glucose)}` : ""
+              r.glucose != null ? `سكر الدم ${fmtNum(r.glucose)}` : ""
             }${r.glucose != null && r.note ? " · " : ""}${r.note ? esc(r.note) : ""}</div>` : ""}
           </div>
-          <button class="del" title="Delete" aria-label="Delete dose">✕</button>`;
+          <button class="del" title="حذف" aria-label="حذف الجرعة">✕</button>`;
         el.querySelector(".del").addEventListener("click", async () => {
-          if (!confirm("Delete this entry?")) return;
+          if (!confirm("حذف هذا الإدخال؟")) return;
           try { await deleteDoc(doc(db, "users", uid, "doses", r.id)); }
           catch (e) { console.error(e); }
         });
@@ -417,12 +415,12 @@ const firebaseConfig = {
     const today = new Date(); today.setHours(0,0,0,0);
     const that = new Date(d); that.setHours(0,0,0,0);
     const diff = Math.round((today - that) / 86400000);
-    if (diff === 0) return "Today";
-    if (diff === 1) return "Yesterday";
-    return d.toLocaleDateString(undefined, { weekday:"short", month:"short", day:"numeric" });
+    if (diff === 0) return "اليوم";
+    if (diff === 1) return "أمس";
+    return d.toLocaleDateString("ar", { weekday:"long", month:"long", day:"numeric" });
   }
   function timeLabel(d){
-    return d.toLocaleTimeString(undefined, { hour:"numeric", minute:"2-digit" });
+    return d.toLocaleTimeString("ar", { hour:"numeric", minute:"2-digit" });
   }
   function esc(s){
     return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
