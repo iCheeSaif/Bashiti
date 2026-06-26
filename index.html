@@ -141,11 +141,25 @@
   .entry{
     background:var(--card);border:1px solid var(--line);
     border-inline-start:4px solid var(--other);
-    border-radius:12px;padding:14px 16px;margin-bottom:8px;
-    display:flex;align-items:center;gap:14px;
+    border-radius:12px;margin-bottom:8px;overflow:hidden;
   }
   .entry.rapid{border-inline-start-color:var(--rapid);}
   .entry.long{border-inline-start-color:var(--long);}
+  .entry .row{
+    display:flex;align-items:center;gap:14px;padding:14px 16px;cursor:pointer;
+  }
+  .entry .row:hover{background:#ffffff08;}
+  .entry.open .row{background:#ffffff08;}
+  .editor{padding:0 16px 14px;display:grid;gap:10px;}
+  .editor[hidden]{display:none;}
+  .efield{display:flex;flex-direction:column;gap:5px;}
+  .editor label{font-size:.78rem;color:var(--ink-soft);}
+  .e-save{
+    font-family:inherit;font-weight:600;font-size:.88rem;color:#fff;
+    background:var(--accent);border:none;border-radius:9px;padding:10px 14px;
+    cursor:pointer;justify-self:start;
+  }
+  .e-save:hover{background:var(--accent-dark);}
   .readout{
     font-family:"IBM Plex Mono",monospace;font-weight:600;
     font-size:1.55rem;line-height:1;letter-spacing:-.02em;
@@ -197,7 +211,7 @@
   </div>
 
   <div class="summary">
-    <div class="stat"><div class="k">اليوم · الإجمالي</div><div class="v" id="sumUnits">0<small> و</small></div></div>
+    <div class="stat"><div class="k">اليوم · الإجمالي</div><div class="v" id="sumUnits">0</div></div>
     <div class="stat"><div class="k">اليوم · الجرعات</div><div class="v" id="sumDoses">0</div></div>
   </div>
 
@@ -213,7 +227,7 @@
         </div>
       </div>
       <div class="field">
-        <label for="units">الوحدات (و)</label>
+        <label for="units">الوحدات</label>
         <input class="units-input" id="units" type="number" step="0.5" min="0" inputmode="decimal" placeholder="0" />
       </div>
       <div class="field">
@@ -245,7 +259,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
-    getFirestore, collection, addDoc, deleteDoc, doc,
+    getFirestore, collection, addDoc, deleteDoc, updateDoc, doc,
     query, orderBy, onSnapshot, serverTimestamp, Timestamp
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -381,7 +395,7 @@
       const t = r.taken?.toDate?.();
       if (t && t >= today) { tUnits += r.units || 0; tDoses++; }
     });
-    $("sumUnits").innerHTML = fmtNum(tUnits) + "<small> و</small>";
+    $("sumUnits").textContent = fmtNum(tUnits);
     $("sumDoses").textContent = tDoses;
 
     if (!rows.length) {
@@ -405,7 +419,7 @@
       g.className = "daygroup";
       const head = document.createElement("div");
       head.className = "dayhead";
-      head.innerHTML = `<span>${dayLabel(items[0].t)}</span><span class="du">${fmtNum(dayUnits)} و</span>`;
+      head.innerHTML = `<span>${dayLabel(items[0].t)}</span><span class="du">${fmtNum(dayUnits)}</span>`;
       g.appendChild(head);
 
       items.forEach(({ r, t }) => {
@@ -413,23 +427,64 @@
         const el = document.createElement("div");
         el.className = "entry " + cat;
         el.innerHTML = `
-          <div class="readout">${fmtNum(r.units)}<small>و</small></div>
-          <div class="meta">
-            <div class="top">
-              <span class="chip ${cat}">${CAT_LABEL[cat] || "أخرى"}</span>
-              ${r.name ? `<span class="name">${esc(r.name)}</span>` : ""}
-              <span class="time">${timeLabel(t)}</span>
+          <div class="row">
+            <div class="readout">${fmtNum(r.units)}</div>
+            <div class="meta">
+              <div class="top">
+                <span class="chip ${cat}">${CAT_LABEL[cat] || "أخرى"}</span>
+                ${r.name ? `<span class="name">${esc(r.name)}</span>` : ""}
+                <span class="time">${timeLabel(t)}</span>
+              </div>
+              ${(r.glucose != null || r.note) ? `<div class="sub">${
+                r.glucose != null ? `القياس ${fmtNum(r.glucose)}` : ""
+              }${r.glucose != null && r.note ? " · " : ""}${r.note ? esc(r.note) : ""}</div>` : ""}
             </div>
-            ${(r.glucose != null || r.note) ? `<div class="sub">${
-              r.glucose != null ? `سكر الدم ${fmtNum(r.glucose)}` : ""
-            }${r.glucose != null && r.note ? " · " : ""}${r.note ? esc(r.note) : ""}</div>` : ""}
+            <button class="del" title="حذف" aria-label="حذف الجرعة">✕</button>
           </div>
-          <button class="del" title="حذف" aria-label="حذف الجرعة">✕</button>`;
-        el.querySelector(".del").addEventListener("click", async () => {
+          <div class="editor" hidden>
+            <div class="efield">
+              <label>القياس</label>
+              <input class="e-glucose" type="number" step="0.1" min="0" inputmode="decimal" value="${r.glucose != null ? r.glucose : ""}" placeholder="القراءة" />
+            </div>
+            <div class="efield">
+              <label>ملاحظة</label>
+              <input class="e-note" type="text" value="${r.note ? esc(r.note) : ""}" placeholder="اكتب ملاحظة…" />
+            </div>
+            <button class="e-save">حفظ</button>
+          </div>`;
+
+        const editor = el.querySelector(".editor");
+
+        // ضغط على الجرعة = فتح/إغلاق التعديل
+        el.querySelector(".row").addEventListener("click", (e) => {
+          if (e.target.closest(".del")) return;
+          const open = editor.hasAttribute("hidden");
+          editor.toggleAttribute("hidden", !open);
+          el.classList.toggle("open", open);
+          if (open) el.querySelector(".e-glucose").focus();
+        });
+
+        // حفظ التعديل
+        el.querySelector(".e-save").addEventListener("click", async (e) => {
+          e.stopPropagation();
+          const gv = el.querySelector(".e-glucose").value;
+          const nv = el.querySelector(".e-note").value.trim();
+          try {
+            await updateDoc(doc(db, "users", uid, "doses", r.id), {
+              glucose: gv ? parseFloat(gv) : null,
+              note: nv || null
+            });
+          } catch (err) { console.error(err); alert("تعذّر الحفظ."); }
+        });
+
+        // حذف
+        el.querySelector(".del").addEventListener("click", async (e) => {
+          e.stopPropagation();
           if (!confirm("حذف هذا الإدخال؟")) return;
           try { await deleteDoc(doc(db, "users", uid, "doses", r.id)); }
-          catch (e) { console.error(e); }
+          catch (err) { console.error(err); }
         });
+
         g.appendChild(el);
       });
       log.appendChild(g);
