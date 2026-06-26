@@ -2,7 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<meta name="theme-color" content="#0E141B" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="سجل الإنسولين" />
+<link rel="apple-touch-icon" href="icon-180.png" />
+<link rel="manifest" href="manifest.json" />
 <title>سجل الإنسولين</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -34,6 +40,8 @@
     line-height:1.6;
     -webkit-font-smoothing:antialiased;
     padding:0 16px 64px;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:calc(64px + env(safe-area-inset-bottom));
   }
   .wrap{max-width:680px;margin:0 auto;}
 
@@ -235,7 +243,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import {
     getFirestore, collection, addDoc, deleteDoc, doc,
     query, orderBy, onSnapshot, serverTimestamp, Timestamp
@@ -279,6 +287,12 @@
   }
   $("when").value = nowLocal();
 
+  // ===== الحساب الثابت المخفي (نفس البيانات على كل الأجهزة) =====
+  // غيّر هذي القيم لو تبي. الإيميل وهمي، ما يحتاج بريد حقيقي.
+  const APP_EMAIL = "owner@insulin-7766a.app";
+  const APP_PASS  = "Wk1omx1wg11ldaBbDyomtZQc";
+  // ===========================================================
+
   // تهيئة Firebase
   try {
     const app = initializeApp(firebaseConfig);
@@ -287,9 +301,18 @@
     onAuthStateChanged(auth, (user) => {
       if (user) { uid = user.uid; ready(); }
     });
-    signInAnonymously(auth).catch(err => {
-      statusText.textContent = "خطأ مصادقة";
-      console.error(err);
+    // جرّب دخول؛ أول مرة أنشئ الحساب تلقائياً
+    signInWithEmailAndPassword(auth, APP_EMAIL, APP_PASS).catch((err) => {
+      const code = err.code || "";
+      if (code === "auth/user-not-found" || code === "auth/invalid-credential" || code === "auth/invalid-login-credentials") {
+        createUserWithEmailAndPassword(auth, APP_EMAIL, APP_PASS).catch((e) => {
+          statusText.textContent = "خطأ مصادقة";
+          console.error(e);
+        });
+      } else {
+        statusText.textContent = "خطأ مصادقة";
+        console.error(err);
+      }
     });
   } catch (err) {
     console.error("Firebase init failed:", err);
