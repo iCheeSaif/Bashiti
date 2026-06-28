@@ -1,489 +1,424 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#0E141B" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="سجل الإنسولين" />
-<link rel="apple-touch-icon" href="icon-180.png" />
-<link rel="manifest" href="manifest.json" />
-<title>سجل الإنسولين</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@600;700&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service Portal — Home</title>
 <style>
   :root{
-    --paper:#0E141B;
-    --card:#19222E;
-    --input:#0F1822;
-    --ink:#F1F5F9;
-    --ink-soft:#9FB0C2;
-    --line:#2D3A48;
-    --accent:#1FAFA8;
-    --accent-dark:#27C2BA;
-    --rapid:#F0A04E;
-    --long:#4F92E0;
-    --good:#36C190;
-    --bad:#E5675A;
-    --radius:16px;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 28px rgba(0,0,0,.4);
+    --bg-0:#070b1a;
+    --bg-1:#0d1430;
+    --ink:#eaf0ff;
+    --ink-dim:#9fb0d6;
+    --ink-faint:#6b7aa3;
+    --accent:#62e6c8;
+    --accent-2:#7aa2ff;
+    --accent-warm:#ffd27a;
+    --danger:#ff7a93;
+    --glass:rgba(255,255,255,0.06);
+    --glass-strong:rgba(255,255,255,0.10);
+    --stroke:rgba(255,255,255,0.14);
+    --stroke-soft:rgba(255,255,255,0.08);
+    --shadow:0 24px 60px -20px rgba(0,0,0,0.65);
+    --r-lg:24px;
+    --r-md:18px;
+    --r-sm:12px;
+    --font-display:"Space Grotesk","Segoe UI",system-ui,sans-serif;
+    --font-body:"Inter",system-ui,-apple-system,sans-serif;
   }
-  html{color-scheme:dark;}
-  *{box-sizing:border-box;}
-  html,body{margin:0;}
+
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  html{scroll-behavior:smooth}
+
   body{
-    background:var(--paper);
+    font-family:var(--font-body);
     color:var(--ink);
-    font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;
-    font-size:17.5px;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-    padding:0 16px 64px;
-    padding-top:env(safe-area-inset-top);
-    padding-bottom:calc(72px + env(safe-area-inset-bottom));
+    background:var(--bg-0);
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
   }
-  .wrap{max-width:560px;margin:0 auto;}
 
-  /* Header */
-  header{
-    display:flex;align-items:center;justify-content:space-between;
-    gap:12px;padding:26px 2px 18px;flex-wrap:wrap;
+  /* Ambient aurora background */
+  .aurora{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .aurora::before,.aurora::after{
+    content:"";position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;
   }
-  .brand{display:flex;align-items:center;gap:12px;}
-  .vial{
-    width:30px;height:30px;flex:none;
-    border:2px solid var(--ink);border-radius:6px 6px 8px 8px;
-    position:relative;background:linear-gradient(to top, var(--accent) 0 42%, transparent 42%);
+  .aurora::before{
+    width:60vw;height:60vw;left:-15vw;top:-20vw;
+    background:radial-gradient(circle at 30% 30%, #2b6fff 0%, transparent 60%);
+    animation:drift1 22s ease-in-out infinite alternate;
   }
-  .vial::before{content:"";position:absolute;top:-7px;left:6px;right:6px;height:5px;background:var(--ink);border-radius:2px;}
-  h1{font-weight:700;font-size:1.7rem;letter-spacing:-.01em;margin:0;}
-  .status{
-    font-family:"IBM Plex Mono",monospace;font-size:.8rem;
-    color:var(--ink-soft);display:flex;align-items:center;gap:7px;direction:ltr;
+  .aurora::after{
+    width:55vw;height:55vw;right:-18vw;top:10vw;
+    background:radial-gradient(circle at 60% 40%, #1ec9a4 0%, transparent 60%);
+    animation:drift2 26s ease-in-out infinite alternate;
   }
-  .dot{width:9px;height:9px;border-radius:50%;background:var(--ink-soft);}
-  .dot.on{background:var(--good);}
+  .aurora .blob3{
+    position:absolute;width:45vw;height:45vw;left:30vw;bottom:-25vw;border-radius:50%;
+    background:radial-gradient(circle, #7a4bff 0%, transparent 60%);
+    filter:blur(100px);opacity:.4;animation:drift3 30s ease-in-out infinite alternate;
+  }
+  @keyframes drift1{to{transform:translate(8vw,6vw) scale(1.1)}}
+  @keyframes drift2{to{transform:translate(-6vw,4vw) scale(1.15)}}
+  @keyframes drift3{to{transform:translate(-10vw,-6vw) scale(1.2)}}
 
-  /* Banner */
-  .banner{
-    background:#2A2210;border:1px solid #4A3A14;color:#E3B566;
-    border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;
-    font-size:.95rem;display:none;
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
-  .banner code{font-family:"IBM Plex Mono",monospace;background:#ffffff14;padding:1px 5px;border-radius:4px;direction:ltr;display:inline-block;}
 
-  /* Summary */
-  .summary{display:flex;gap:12px;margin-bottom:22px;}
-  .stat{
-    flex:1;background:var(--card);border:1px solid var(--line);
-    border-radius:var(--radius);padding:16px 18px;
-  }
-  .stat .k{font-size:.9rem;color:var(--ink-soft);}
-  .stat .v{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:2.1rem;margin-top:3px;direction:ltr;}
+  .shell{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:0 24px 80px}
 
-  /* Card / form */
-  .card{
-    background:var(--card);border:1px solid var(--line);
-    border-radius:var(--radius);box-shadow:var(--shadow);
-    padding:22px;margin-bottom:26px;
+  /* Glass utility */
+  .glass{
+    background:var(--glass);
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    border:1px solid var(--stroke-soft);
+    box-shadow:var(--shadow);
   }
-  .card h2{font-size:1rem;font-weight:700;color:var(--ink-soft);margin:0 0 18px;}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .field{display:flex;flex-direction:column;gap:8px;}
-  .field.full{grid-column:1 / -1;}
-  label{font-size:1rem;font-weight:600;color:var(--ink);}
-  label .opt{font-weight:400;color:var(--ink-soft);font-size:.9rem;}
-  input{
-    font-family:inherit;font-size:1.2rem;color:var(--ink);
-    background:var(--input);border:1.5px solid var(--line);border-radius:12px;
-    padding:14px 16px;width:100%;min-height:54px;
-  }
-  input:focus{outline:none;border-color:var(--accent);}
-  .units-input{font-family:"IBM Plex Mono",monospace;font-weight:700;font-size:1.4rem;}
 
-  .seg{display:flex;gap:10px;}
-  .seg button{
-    flex:1;font-family:inherit;font-size:1.05rem;font-weight:600;cursor:pointer;
-    padding:16px 8px;border-radius:13px;border:1.5px solid var(--line);
-    background:var(--input);color:var(--ink-soft);min-height:56px;
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky;top:16px;z-index:30;margin:16px 0 0;
+    display:flex;align-items:center;gap:20px;
+    padding:14px 22px;border-radius:var(--r-md);
   }
-  .seg button[aria-pressed="true"]{color:#fff;border-color:transparent;}
-  .seg button.rapid[aria-pressed="true"]{background:var(--rapid);color:#1a1206;}
-  .seg button.long[aria-pressed="true"]{background:var(--long);}
+  .brand{display:flex;align-items:center;gap:12px;font-family:var(--font-display);font-weight:700;letter-spacing:-.02em;font-size:18px}
+  .brand .mark{
+    width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    color:#04121a;font-weight:700;box-shadow:0 6px 20px -6px var(--accent);
+  }
+  .nav{display:flex;gap:6px;margin-left:8px}
+  .nav a{
+    color:var(--ink-dim);text-decoration:none;font-size:14px;font-weight:500;
+    padding:8px 14px;border-radius:10px;transition:.2s;
+  }
+  .nav a:hover,.nav a.active{color:var(--ink);background:var(--glass-strong)}
+  .topbar .spacer{flex:1}
+  .icon-btn{
+    width:38px;height:38px;border-radius:11px;display:grid;place-items:center;cursor:pointer;
+    background:var(--glass);border:1px solid var(--stroke-soft);color:var(--ink-dim);transition:.2s;position:relative;
+  }
+  .icon-btn:hover{color:var(--ink);background:var(--glass-strong)}
+  .icon-btn .dot{position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--danger);border:2px solid var(--bg-0)}
+  .avatar{
+    width:38px;height:38px;border-radius:11px;display:grid;place-items:center;cursor:pointer;
+    background:linear-gradient(135deg,var(--accent-2),#9a6bff);font-weight:600;font-size:14px;color:#fff;
+  }
 
-  .btn{
-    font-weight:700;font-size:1.15rem;color:#06201f;background:var(--accent);
-    border:none;border-radius:14px;padding:17px 18px;cursor:pointer;width:100%;
-    margin-top:8px;min-height:58px;font-family:inherit;transition:background .15s ease;
+  /* ---------- Hero ---------- */
+  .hero{margin-top:32px;text-align:center;padding:8px 0 4px}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--accent);font-weight:600;padding:7px 14px;border-radius:999px;
+    background:rgba(98,230,200,.08);border:1px solid rgba(98,230,200,.22);
   }
-  .btn:hover{background:var(--accent-dark);}
-  .btn:active{transform:translateY(1px);}
-  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .hero h1{
+    font-family:var(--font-display);font-weight:700;letter-spacing:-.03em;line-height:1.04;
+    font-size:clamp(34px,5.5vw,62px);margin:22px 0 14px;
+  }
+  .hero h1 .grad{
+    background:linear-gradient(110deg,var(--accent),var(--accent-2) 50%,#b08bff);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .hero p{color:var(--ink-dim);font-size:17px;max-width:560px;margin:0 auto 34px}
 
-  /* Log */
-  .daygroup{margin-bottom:24px;}
-  .dayhead{
-    font-size:.95rem;font-weight:700;color:var(--ink-soft);
-    padding:0 6px 10px;display:flex;justify-content:space-between;
+  .searchwrap{max-width:680px;margin:0 auto;position:relative}
+  .searchbar{
+    display:flex;align-items:center;gap:14px;padding:6px 6px 6px 22px;border-radius:18px;
+    background:var(--glass-strong);border:1px solid var(--stroke);
+    backdrop-filter:blur(24px);box-shadow:var(--shadow);transition:.25s;
   }
-  .dayhead .du{font-family:"IBM Plex Mono",monospace;direction:ltr;}
-  .entry{
-    background:var(--card);border:1px solid var(--line);
-    border-inline-start:5px solid var(--ink-soft);
-    border-radius:14px;margin-bottom:10px;overflow:hidden;
+  .searchbar:focus-within{border-color:rgba(98,230,200,.45);box-shadow:0 0 0 4px rgba(98,230,200,.12),var(--shadow)}
+  .searchbar svg{flex-shrink:0;color:var(--ink-faint)}
+  .searchbar input{
+    flex:1;background:transparent;border:none;outline:none;color:var(--ink);
+    font-family:var(--font-body);font-size:16px;padding:14px 0;
   }
-  .entry.rapid{border-inline-start-color:var(--rapid);}
-  .entry.long{border-inline-start-color:var(--long);}
-  .entry .row{display:flex;align-items:center;gap:16px;padding:16px 18px;cursor:pointer;}
-  .entry .row:active{background:#ffffff0a;}
-  .entry.open .row{background:#ffffff0a;}
-  .readout{
-    font-family:"IBM Plex Mono",monospace;font-weight:700;
-    font-size:2.2rem;line-height:1;letter-spacing:-.02em;
-    font-variant-numeric:tabular-nums;min-width:64px;text-align:start;direction:ltr;
+  .searchbar input::placeholder{color:var(--ink-faint)}
+  .searchbar button{
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#04121a;border:none;
+    font-family:var(--font-display);font-weight:600;font-size:14px;padding:12px 22px;border-radius:13px;cursor:pointer;transition:.2s;
   }
-  .meta{flex:1;min-width:0;}
-  .meta .top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-  .chip{font-size:.9rem;font-weight:700;padding:3px 11px;border-radius:999px;color:#fff;background:var(--ink-soft);}
-  .chip.rapid{background:var(--rapid);color:#1a1206;}
-  .chip.long{background:var(--long);}
-  .time{font-family:"IBM Plex Mono",monospace;font-size:.9rem;color:var(--ink-soft);direction:ltr;}
-  .face{font-size:1.6rem;line-height:1;flex:none;}
-  .reads{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
-  .read{
-    background:var(--input);border:1px solid var(--line);border-radius:9px;
-    padding:4px 9px;font-size:.9rem;color:var(--ink-soft);
+  .searchbar button:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  .suggest{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .suggest span{
+    font-size:13px;color:var(--ink-dim);padding:7px 13px;border-radius:999px;cursor:pointer;
+    background:var(--glass);border:1px solid var(--stroke-soft);transition:.2s;
   }
-  .read b{color:var(--ink);font-family:"IBM Plex Mono",monospace;font-weight:600;direction:ltr;}
-  .notetxt{font-size:.98rem;color:var(--ink-soft);margin-top:8px;}
-  .del{flex:none;border:none;background:none;cursor:pointer;color:var(--ink-soft);font-size:1.4rem;padding:8px;border-radius:10px;line-height:1;}
-  .del:active{color:var(--bad);background:#E5675A1a;}
+  .suggest span:hover{color:var(--ink);border-color:var(--stroke)}
 
-  /* Editor */
-  .editor{padding:4px 18px 18px;display:grid;gap:16px;border-top:1px solid var(--line);}
-  .editor[hidden]{display:none;}
-  .egrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
-  .efield{display:flex;flex-direction:column;gap:7px;}
-  .editor label{font-size:.95rem;color:var(--ink-soft);font-weight:600;}
-  .moodsel{display:flex;gap:12px;}
-  .mood{
-    flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;
-    font-family:inherit;font-size:1rem;font-weight:600;color:var(--ink-soft);
-    background:var(--input);border:1.5px solid var(--line);border-radius:13px;padding:14px 8px;
-  }
-  .mood .em{font-size:2rem;line-height:1;}
-  .mood.good[aria-pressed="true"]{border-color:var(--good);color:var(--good);background:#36c1901a;}
-  .mood.bad[aria-pressed="true"]{border-color:var(--bad);color:var(--bad);background:#e5675a1a;}
-  .e-save{
-    font-family:inherit;font-weight:700;font-size:1.05rem;color:#06201f;
-    background:var(--accent);border:none;border-radius:12px;padding:15px;cursor:pointer;min-height:54px;
-  }
-  .e-save:hover{background:var(--accent-dark);}
+  /* ---------- Section heads ---------- */
+  .sec{margin-top:56px}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+  .sec-head h2{font-family:var(--font-display);font-weight:600;font-size:22px;letter-spacing:-.02em}
+  .sec-head a{color:var(--accent);text-decoration:none;font-size:14px;font-weight:500}
+  .sec-head a:hover{text-decoration:underline}
 
-  .empty{text-align:center;color:var(--ink-soft);padding:48px 16px;font-size:1.05rem;}
-  footer{text-align:center;color:var(--ink-soft);font-size:.85rem;padding:10px 0;}
-
-  @media (max-width:480px){
-    .grid,.egrid{grid-template-columns:1fr;}
+  /* ---------- Quick actions grid ---------- */
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  .tile{
+    padding:24px;border-radius:var(--r-md);cursor:pointer;transition:.25s;position:relative;overflow:hidden;
   }
-  @media (prefers-reduced-motion:reduce){*{transition:none!important;}}
+  .tile::after{
+    content:"";position:absolute;inset:0;opacity:0;transition:.25s;
+    background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),rgba(255,255,255,.10),transparent 40%);
+  }
+  .tile:hover{transform:translateY(-4px);border-color:var(--stroke)}
+  .tile:hover::after{opacity:1}
+  .tile .ic{
+    width:48px;height:48px;border-radius:14px;display:grid;place-items:center;margin-bottom:18px;
+    background:linear-gradient(135deg,rgba(98,230,200,.18),rgba(122,162,255,.18));border:1px solid var(--stroke-soft);
+  }
+  .tile h3{font-family:var(--font-display);font-weight:600;font-size:16px;margin-bottom:6px}
+  .tile p{color:var(--ink-dim);font-size:13px;line-height:1.5}
+
+  /* ---------- Two-col layout ---------- */
+  .cols{display:grid;grid-template-columns:1.6fr 1fr;gap:24px;align-items:start}
+
+  /* Ticket list */
+  .panel{padding:24px;border-radius:var(--r-lg)}
+  .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .panel-head h2{font-family:var(--font-display);font-weight:600;font-size:18px}
+  .ticket{
+    display:flex;align-items:center;gap:16px;padding:16px;border-radius:var(--r-sm);
+    border:1px solid transparent;transition:.2s;cursor:pointer;
+  }
+  .ticket:hover{background:var(--glass);border-color:var(--stroke-soft)}
+  .ticket+.ticket{margin-top:6px}
+  .t-id{font-family:var(--font-display);font-size:13px;color:var(--ink-faint);width:78px;flex-shrink:0}
+  .t-main{flex:1;min-width:0}
+  .t-main .t-title{font-weight:500;font-size:14px;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .t-main .t-meta{font-size:12px;color:var(--ink-faint)}
+  .badge{font-size:11px;font-weight:600;padding:5px 11px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
+  .b-open{background:rgba(122,162,255,.16);color:#a9c2ff;border:1px solid rgba(122,162,255,.3)}
+  .b-prog{background:rgba(255,210,122,.14);color:var(--accent-warm);border:1px solid rgba(255,210,122,.3)}
+  .b-resolved{background:rgba(98,230,200,.14);color:var(--accent);border:1px solid rgba(98,230,200,.3)}
+  .b-hold{background:rgba(255,122,147,.14);color:var(--danger);border:1px solid rgba(255,122,147,.3)}
+
+  /* Side column */
+  .side-card{padding:22px;border-radius:var(--r-lg)}
+  .side-card+.side-card{margin-top:24px}
+  .stat-row{display:flex;gap:14px;margin-bottom:6px}
+  .stat{flex:1;padding:18px;border-radius:var(--r-md);text-align:center}
+  .stat .n{font-family:var(--font-display);font-weight:700;font-size:30px;letter-spacing:-.02em}
+  .stat .n.c1{color:var(--accent)}
+  .stat .n.c2{color:var(--accent-2)}
+  .stat .l{font-size:12px;color:var(--ink-dim);margin-top:4px}
+
+  .kb-item{display:flex;gap:14px;padding:13px 0;border-bottom:1px solid var(--stroke-soft);cursor:pointer}
+  .kb-item:last-child{border-bottom:none}
+  .kb-item .kn{font-family:var(--font-display);color:var(--accent-2);font-weight:600;font-size:13px;flex-shrink:0}
+  .kb-item .kt{font-size:14px;color:var(--ink-dim);transition:.2s;line-height:1.4}
+  .kb-item:hover .kt{color:var(--ink)}
+
+  .announce{display:flex;gap:14px;align-items:flex-start}
+  .announce .pip{width:9px;height:9px;border-radius:50%;background:var(--accent-warm);margin-top:6px;flex-shrink:0;box-shadow:0 0 12px var(--accent-warm)}
+  .announce .at{font-size:14px;color:var(--ink-dim);line-height:1.5}
+  .announce .at b{color:var(--ink);font-weight:600}
+
+  /* ---------- Footer ---------- */
+  .footer{margin-top:64px;padding:26px;border-radius:var(--r-lg);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
+  .footer .fl{font-size:13px;color:var(--ink-faint)}
+  .footer .fr{display:flex;gap:18px}
+  .footer .fr a{color:var(--ink-dim);font-size:13px;text-decoration:none}
+  .footer .fr a:hover{color:var(--ink)}
+
+  /* ---------- Reveal animation ---------- */
+  .reveal{opacity:0;transform:translateY(20px);transition:.7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- Responsive ---------- */
+  @media(max-width:980px){
+    .grid-4{grid-template-columns:repeat(2,1fr)}
+    .cols{grid-template-columns:1fr}
+    .nav{display:none}
+  }
+  @media(max-width:560px){
+    .grid-4{grid-template-columns:1fr}
+    .stat-row{flex-direction:column}
+    .topbar{gap:12px;padding:12px 16px}
+    .shell{padding:0 16px 60px}
+  }
+
+  @media(prefers-reduced-motion:reduce){
+    *,.aurora::before,.aurora::after,.aurora .blob3{animation:none!important;transition:none!important}
+    .reveal{opacity:1;transform:none}
+  }
+
+  :focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="aurora"><div class="blob3"></div></div>
+<div class="grain"></div>
 
-  <header>
-    <div class="brand">
-      <div class="vial" aria-hidden="true"></div>
-      <h1>سجل الإنسولين</h1>
-    </div>
-    <div class="status"><span class="dot" id="dot"></span><span id="statusText">جارٍ الاتصال…</span></div>
+<div class="shell">
+
+  <!-- Top bar -->
+  <header class="topbar glass">
+    <div class="brand"><div class="mark">S</div>ServiceHub</div>
+    <nav class="nav">
+      <a href="#" class="active">Home</a>
+      <a href="#">Catalog</a>
+      <a href="#">Knowledge</a>
+      <a href="#">Requests</a>
+      <a href="#">Status</a>
+    </nav>
+    <div class="spacer"></div>
+    <button class="icon-btn" aria-label="Notifications"><div class="dot"></div>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+    </button>
+    <button class="icon-btn" aria-label="Help">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg>
+    </button>
+    <div class="avatar">AK</div>
   </header>
 
-  <div class="banner" id="banner">
-    لم يتم إعداد Firebase. الصِق إعدادات مشروعك في <code>firebaseConfig</code> داخل سكربت هذا الملف.
-  </div>
+  <!-- Hero -->
+  <section class="hero reveal">
+    <span class="eyebrow">● All systems operational</span>
+    <h1>How can we <span class="grad">help you</span> today?</h1>
+    <p>Search the catalog, track your requests, and browse knowledge — everything you need in one place.</p>
 
-  <div class="summary">
-    <div class="stat"><div class="k">اليوم · الإجمالي</div><div class="v" id="sumUnits">0</div></div>
-    <div class="stat"><div class="k">اليوم · الجرعات</div><div class="v" id="sumDoses">0</div></div>
-  </div>
-
-  <div class="card">
-    <h2>تسجيل جرعة</h2>
-    <div class="grid">
-      <div class="field full">
-        <label>النوع</label>
-        <div class="seg" id="seg">
-          <button type="button" class="rapid" data-cat="rapid" aria-pressed="true">سريع الأمد</button>
-          <button type="button" class="long" data-cat="long" aria-pressed="false">طويل الأمد</button>
-        </div>
+    <div class="searchwrap">
+      <div class="searchbar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" placeholder="Search for services, articles, or requests…" aria-label="Search">
+        <button>Search</button>
       </div>
-      <div class="field">
-        <label for="units">الوحدات</label>
-        <input class="units-input" id="units" type="number" step="0.5" min="0" inputmode="decimal" placeholder="0" />
-      </div>
-      <div class="field">
-        <label for="when">الوقت</label>
-        <input id="when" type="datetime-local" />
-      </div>
-      <div class="field full">
-        <label for="glucose">القياس <span class="opt">(اختياري)</span></label>
-        <input id="glucose" type="number" step="0.1" min="0" inputmode="decimal" placeholder="القراءة عند الجرعة" />
-      </div>
-      <div class="field full">
-        <label for="note">ملاحظة <span class="opt">(اختياري)</span></label>
-        <input id="note" type="text" placeholder="قبل الغداء، تصحيح…" autocomplete="off" />
+      <div class="suggest">
+        <span>Reset password</span>
+        <span>Request laptop</span>
+        <span>VPN access</span>
+        <span>New software</span>
+        <span>Time off</span>
       </div>
     </div>
-    <button class="btn" id="save" disabled>تسجيل الجرعة</button>
-  </div>
+  </section>
 
-  <div id="log"><div class="empty">لا توجد جرعات مسجّلة بعد.</div></div>
+  <!-- Quick actions -->
+  <section class="sec reveal">
+    <div class="sec-head"><h2>Popular services</h2><a href="#">Browse catalog →</a></div>
+    <div class="grid-4">
+      <div class="tile glass" data-tilt>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#62e6c8" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+        <h3>Hardware</h3><p>Request laptops, monitors, phones and accessories.</p>
+      </div>
+      <div class="tile glass" data-tilt>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7aa2ff" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg></div>
+        <h3>Software</h3><p>Install apps, manage licenses and access tools.</p>
+      </div>
+      <div class="tile glass" data-tilt>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#b08bff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+        <h3>Access</h3><p>VPN, accounts, permissions and security.</p>
+      </div>
+      <div class="tile glass" data-tilt>
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffd27a" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
+        <h3>HR & People</h3><p>Time off, benefits, payroll and onboarding.</p>
+      </div>
+    </div>
+  </section>
 
-  <footer>سجل شخصي فقط. ليس نصيحة طبية.</footer>
+  <!-- Two column -->
+  <section class="sec cols">
+
+    <!-- My requests -->
+    <div class="panel glass reveal">
+      <div class="panel-head">
+        <h2>My open requests</h2>
+        <a href="#" style="color:var(--accent);text-decoration:none;font-size:14px">View all</a>
+      </div>
+
+      <div class="ticket">
+        <div class="t-id">REQ0048213</div>
+        <div class="t-main"><div class="t-title">MacBook Pro 16" replacement</div><div class="t-meta">Assigned to IT Provisioning · Updated 2h ago</div></div>
+        <div class="badge b-prog">In Progress</div>
+      </div>
+      <div class="ticket">
+        <div class="t-id">INC0091844</div>
+        <div class="t-main"><div class="t-title">VPN drops on connect</div><div class="t-meta">Assigned to Network Ops · Updated 5h ago</div></div>
+        <div class="badge b-open">Open</div>
+      </div>
+      <div class="ticket">
+        <div class="t-id">REQ0048190</div>
+        <div class="t-main"><div class="t-title">Adobe Creative Cloud license</div><div class="t-meta">Pending manager approval · Updated 1d ago</div></div>
+        <div class="badge b-hold">On Hold</div>
+      </div>
+      <div class="ticket">
+        <div class="t-id">INC0091702</div>
+        <div class="t-main"><div class="t-title">Shared drive permissions</div><div class="t-meta">Resolved by Access Mgmt · Updated 2d ago</div></div>
+        <div class="badge b-resolved">Resolved</div>
+      </div>
+      <div class="ticket">
+        <div class="t-id">REQ0047998</div>
+        <div class="t-main"><div class="t-title">Standing desk request</div><div class="t-meta">Assigned to Facilities · Updated 3d ago</div></div>
+        <div class="badge b-prog">In Progress</div>
+      </div>
+    </div>
+
+    <!-- Side -->
+    <div>
+      <div class="side-card glass reveal">
+        <div class="stat-row">
+          <div class="stat"><div class="n c1">5</div><div class="l">Open items</div></div>
+          <div class="stat"><div class="n c2">12</div><div class="l">Resolved (30d)</div></div>
+        </div>
+      </div>
+
+      <div class="side-card glass reveal">
+        <h2 style="font-family:var(--font-display);font-weight:600;font-size:18px;margin-bottom:14px">Top knowledge</h2>
+        <div class="kb-item"><span class="kn">KB0012</span><span class="kt">How to set up multi-factor authentication</span></div>
+        <div class="kb-item"><span class="kn">KB0048</span><span class="kt">Connecting to the corporate VPN remotely</span></div>
+        <div class="kb-item"><span class="kn">KB0091</span><span class="kt">Requesting and installing approved software</span></div>
+        <div class="kb-item"><span class="kn">KB0103</span><span class="kt">Resetting your password and account recovery</span></div>
+      </div>
+
+      <div class="side-card glass reveal">
+        <h2 style="font-family:var(--font-display);font-weight:600;font-size:18px;margin-bottom:14px">Announcements</h2>
+        <div class="announce">
+          <div class="pip"></div>
+          <div class="at"><b>Scheduled maintenance</b> — Email services will be briefly unavailable Sat 2:00–4:00 AM UTC.</div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer glass reveal">
+    <div class="fl">© 2026 ServiceHub · Powered by ServiceNow</div>
+    <div class="fr"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact IT</a><a href="#">System Status</a></div>
+  </footer>
+
 </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  import {
-    getFirestore, collection, addDoc, deleteDoc, updateDoc, doc,
-    query, orderBy, onSnapshot, serverTimestamp, Timestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script>
+  // Scroll reveal
+  const io=new IntersectionObserver((es)=>{
+    es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}});
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-  // ===== 1. إعدادات Firebase =====
-  const firebaseConfig = {
-    apiKey: "AIzaSyDLAV3MNFDOrYlDbVTaa0HyHjlfhjtbE2I",
-    authDomain: "insulin-7766a.firebaseapp.com",
-    projectId: "insulin-7766a",
-    storageBucket: "insulin-7766a.firebasestorage.app",
-    messagingSenderId: "739171138727",
-    appId: "1:739171138727:web:8ab0de419a8c3f1fdd6f82",
-    measurementId: "G-Z4PKYWR6MF"
-  };
-
-  // ===== الحساب الثابت المخفي (نفس البيانات على كل الأجهزة) =====
-  const APP_EMAIL = "owner@insulin-7766a.app";
-  const APP_PASS  = "Wk1omx1wg11ldaBbDyomtZQc";
-  // ==============================================================
-
-  const $ = (id) => document.getElementById(id);
-  const dot = $("dot"), statusText = $("statusText");
-
-  if (firebaseConfig.apiKey === "YOUR_API_KEY") {
-    $("banner").style.display = "block";
-    statusText.textContent = "لا يوجد إعداد";
-  }
-
-  let db, uid = null;
-  let selectedCat = "rapid";
-
-  $("seg").addEventListener("click", (e) => {
-    const b = e.target.closest("button[data-cat]");
-    if (!b) return;
-    selectedCat = b.dataset.cat;
-    [...$("seg").children].forEach(x => x.setAttribute("aria-pressed", x === b));
+  // Tile spotlight follow
+  document.querySelectorAll('[data-tilt]').forEach(t=>{
+    t.addEventListener('mousemove',e=>{
+      const r=t.getBoundingClientRect();
+      t.style.setProperty('--mx',((e.clientX-r.left)/r.width*100)+'%');
+      t.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
+    });
   });
 
-  function nowLocal(){
-    const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
-    return d.toISOString().slice(0,16);
-  }
-  $("when").value = nowLocal();
-
-  try {
-    const app = initializeApp(firebaseConfig);
-    db = getFirestore(app);
-    const auth = getAuth(app);
-    onAuthStateChanged(auth, (user) => { if (user) { uid = user.uid; ready(); } });
-    signInWithEmailAndPassword(auth, APP_EMAIL, APP_PASS).catch((err) => {
-      const code = err.code || "";
-      if (code === "auth/user-not-found" || code === "auth/invalid-credential" || code === "auth/invalid-login-credentials") {
-        createUserWithEmailAndPassword(auth, APP_EMAIL, APP_PASS).catch((e) => {
-          statusText.textContent = "خطأ مصادقة"; console.error(e);
-        });
-      } else { statusText.textContent = "خطأ مصادقة"; console.error(err); }
-    });
-  } catch (err) { console.error("Firebase init failed:", err); }
-
-  function ready(){
-    dot.classList.add("on");
-    statusText.textContent = "متصل";
-    $("save").disabled = false;
-    watch();
-  }
-
-  // حفظ جرعة جديدة
-  $("save").addEventListener("click", async () => {
-    const units = parseFloat($("units").value);
-    if (!units || units <= 0) { $("units").focus(); return; }
-    const whenVal = $("when").value;
-    const taken = whenVal ? new Date(whenVal) : new Date();
-    const glucose = $("glucose").value ? parseFloat($("glucose").value) : null;
-
-    $("save").disabled = true;
-    try {
-      await addDoc(collection(db, "users", uid, "doses"), {
-        category: selectedCat,
-        units,
-        glucose, g1:null, g2:null, g3:null,
-        note: $("note").value.trim() || null,
-        mood: null,
-        taken: Timestamp.fromDate(taken),
-        created: serverTimestamp()
-      });
-      $("units").value = ""; $("glucose").value = ""; $("note").value = "";
-      $("when").value = nowLocal();
-    } catch (err) {
-      console.error(err); alert("تعذّر الحفظ. تحقق من القواعد والاتصال.");
-    } finally { $("save").disabled = false; }
+  // Suggestion chips fill search
+  const input=document.querySelector('.searchbar input');
+  document.querySelectorAll('.suggest span').forEach(s=>{
+    s.addEventListener('click',()=>{input.value=s.textContent;input.focus();});
   });
-
-  function watch(){
-    const q = query(collection(db, "users", uid, "doses"), orderBy("taken", "desc"));
-    onSnapshot(q, (snap) => {
-      const rows = [];
-      snap.forEach(d => rows.push({ id: d.id, ...d.data() }));
-      render(rows);
-    }, (err) => { console.error(err); statusText.textContent = "خطأ قراءة"; });
-  }
-
-  const CAT_LABEL = { rapid: "سريع الأمد", long: "طويل الأمد" };
-  const FACE = { good: "🙂", bad: "🙁" };
-  const fmtNum = (n) => Number.isInteger(n) ? n : n.toFixed(1);
-
-  function render(rows){
-    const log = $("log");
-
-    const today = new Date(); today.setHours(0,0,0,0);
-    let tUnits = 0, tDoses = 0;
-    rows.forEach(r => {
-      const t = r.taken?.toDate?.();
-      if (t && t >= today) { tUnits += r.units || 0; tDoses++; }
-    });
-    $("sumUnits").textContent = fmtNum(tUnits);
-    $("sumDoses").textContent = tDoses;
-
-    if (!rows.length) { log.innerHTML = '<div class="empty">لا توجد جرعات مسجّلة بعد.</div>'; return; }
-
-    const groups = {};
-    rows.forEach(r => {
-      const t = r.taken?.toDate?.() || new Date();
-      const key = t.toDateString();
-      (groups[key] = groups[key] || []).push({ r, t });
-    });
-
-    log.innerHTML = "";
-    for (const key in groups) {
-      const items = groups[key];
-      const dayUnits = items.reduce((s, x) => s + (x.r.units || 0), 0);
-      const g = document.createElement("div");
-      g.className = "daygroup";
-      const head = document.createElement("div");
-      head.className = "dayhead";
-      head.innerHTML = `<span>${dayLabel(items[0].t)}</span><span class="du">${fmtNum(dayUnits)}</span>`;
-      g.appendChild(head);
-
-      items.forEach(({ r, t }) => {
-        const cat = (r.category === "rapid" || r.category === "long") ? r.category : "";
-        const reads = [];
-        if (r.glucose != null) reads.push(["القياس", r.glucose]);
-        if (r.g1 != null) reads.push(["بعد ساعة", r.g1]);
-        if (r.g2 != null) reads.push(["بعد ساعتين", r.g2]);
-        if (r.g3 != null) reads.push(["بعد ٣ ساعات", r.g3]);
-
-        const el = document.createElement("div");
-        el.className = "entry " + cat;
-        el.innerHTML = `
-          <div class="row">
-            <div class="readout">${fmtNum(r.units)}</div>
-            <div class="meta">
-              <div class="top">
-                ${cat ? `<span class="chip ${cat}">${CAT_LABEL[cat]}</span>` : ""}
-                <span class="time">${timeLabel(t)}</span>
-                ${r.mood ? `<span class="face">${FACE[r.mood]||""}</span>` : ""}
-              </div>
-              ${reads.length ? `<div class="reads">${reads.map(([k,v])=>`<span class="read">${k} <b>${fmtNum(v)}</b></span>`).join("")}</div>` : ""}
-              ${r.note ? `<div class="notetxt">${esc(r.note)}</div>` : ""}
-            </div>
-            <button class="del" title="حذف" aria-label="حذف الجرعة">✕</button>
-          </div>
-          <div class="editor" hidden>
-            <div class="egrid">
-              <div class="efield"><label>القياس</label><input class="e-g0" type="number" step="0.1" min="0" inputmode="decimal" value="${r.glucose ?? ""}" placeholder="—" /></div>
-              <div class="efield"><label>بعد ساعة</label><input class="e-g1" type="number" step="0.1" min="0" inputmode="decimal" value="${r.g1 ?? ""}" placeholder="—" /></div>
-              <div class="efield"><label>بعد ساعتين</label><input class="e-g2" type="number" step="0.1" min="0" inputmode="decimal" value="${r.g2 ?? ""}" placeholder="—" /></div>
-              <div class="efield"><label>بعد ٣ ساعات</label><input class="e-g3" type="number" step="0.1" min="0" inputmode="decimal" value="${r.g3 ?? ""}" placeholder="—" /></div>
-            </div>
-            <div class="efield"><label>ملاحظة</label><input class="e-note" type="text" value="${r.note ? esc(r.note) : ""}" placeholder="اكتب ملاحظة…" /></div>
-            <div class="efield">
-              <label>الرضى عن الجرعة</label>
-              <div class="moodsel">
-                <button type="button" class="mood good" data-mood="good" aria-pressed="${r.mood==='good'}"><span class="em">🙂</span>راضٍ</button>
-                <button type="button" class="mood bad" data-mood="bad" aria-pressed="${r.mood==='bad'}"><span class="em">🙁</span>غير راضٍ</button>
-              </div>
-            </div>
-            <button class="e-save">حفظ</button>
-          </div>`;
-
-        const editor = el.querySelector(".editor");
-
-        el.querySelector(".row").addEventListener("click", (e) => {
-          if (e.target.closest(".del")) return;
-          const open = editor.hasAttribute("hidden");
-          editor.toggleAttribute("hidden", !open);
-          el.classList.toggle("open", open);
-        });
-
-        // اختيار الوجه
-        editor.querySelectorAll(".mood").forEach(btn => {
-          btn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            const already = btn.getAttribute("aria-pressed") === "true";
-            editor.querySelectorAll(".mood").forEach(b => b.setAttribute("aria-pressed", "false"));
-            btn.setAttribute("aria-pressed", already ? "false" : "true");
-          });
-        });
-
-        el.querySelector(".e-save").addEventListener("click", async (e) => {
-          e.stopPropagation();
-          const num = (sel) => { const v = editor.querySelector(sel).value; return v ? parseFloat(v) : null; };
-          const moodBtn = editor.querySelector('.mood[aria-pressed="true"]');
-          try {
-            await updateDoc(doc(db, "users", uid, "doses", r.id), {
-              glucose: num(".e-g0"), g1: num(".e-g1"), g2: num(".e-g2"), g3: num(".e-g3"),
-              note: editor.querySelector(".e-note").value.trim() || null,
-              mood: moodBtn ? moodBtn.dataset.mood : null
-            });
-          } catch (err) { console.error(err); alert("تعذّر الحفظ."); }
-        });
-
-        el.querySelector(".del").addEventListener("click", async (e) => {
-          e.stopPropagation();
-          if (!confirm("حذف هذا الإدخال؟")) return;
-          try { await deleteDoc(doc(db, "users", uid, "doses", r.id)); }
-          catch (err) { console.error(err); }
-        });
-
-        g.appendChild(el);
-      });
-      log.appendChild(g);
-    }
-  }
-
-  function dayLabel(d){
-    const today = new Date(); today.setHours(0,0,0,0);
-    const that = new Date(d); that.setHours(0,0,0,0);
-    const diff = Math.round((today - that) / 86400000);
-    if (diff === 0) return "اليوم";
-    if (diff === 1) return "أمس";
-    return d.toLocaleDateString("ar", { weekday:"long", month:"long", day:"numeric" });
-  }
-  function timeLabel(d){ return d.toLocaleTimeString("ar", { hour:"numeric", minute:"2-digit" }); }
-  function esc(s){ return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c])); }
 </script>
 </body>
 </html>
