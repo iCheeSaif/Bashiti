@@ -202,21 +202,50 @@ const firebaseConfig = {
 };
 
 /* ========================================================================
-   الأسئلة — عدّل كما تريد. a = رقم الإجابة الصحيحة (يبدأ من 0)
+   2) إعدادات المسابقة
+   START_DATE = تاريخ بداية اليوم الأول (عدّله ليوم انطلاق المسابقة)
    ======================================================================== */
-const QUESTIONS = [
-  { q:"ما هي عاصمة الأردن؟", o:["عمّان","العقبة","إربد","الزرقاء"], a:0, p:20 },
-  { q:"كم عدد قارات العالم؟", o:["خمسة","ستة","سبعة","ثمانية"], a:2, p:20 },
-  { q:"أي كوكب يُعرف بالكوكب الأحمر؟", o:["الزهرة","المشتري","المريخ","زحل"], a:2, p:20 },
-  { q:"مدينة البتراء تقع في أي دولة؟", o:["مصر","الأردن","العراق","سوريا"], a:1, p:20 },
-  { q:"ما هي عملة الأردن؟", o:["الدولار","الدينار","الريال","الجنيه"], a:1, p:20 },
-];
-
-const WIN_TARGET = QUESTIONS.length;   // لازم يجاوب كل الأسئلة صح (5)
+const START_DATE = "2026-06-30"; // YYYY-MM-DD — يوم 1
+const DAYS = 7;                  // مدة المسابقة
+const PER_DAY = 3;               // أسئلة كل يوم
 const PRIZE = "20 دينار";
 
 /* ========================================================================
-   التطبيق — كل من يسجّل دخول عبر Google يصبح لاعباً تلقائياً
+   3) الأسئلة — 21 سؤال (3 لكل يوم). a = رقم الإجابة الصحيحة (يبدأ من 0)
+   ======================================================================== */
+const QUESTIONS = [
+  // اليوم 1
+  { q:"ما هي عاصمة الأردن؟", o:["عمّان","العقبة","إربد","الزرقاء"], a:0, p:10 },
+  { q:"كم عدد قارات العالم؟", o:["خمسة","ستة","سبعة","ثمانية"], a:2, p:10 },
+  { q:"أي كوكب يُعرف بالكوكب الأحمر؟", o:["الزهرة","المشتري","المريخ","زحل"], a:2, p:10 },
+  // اليوم 2
+  { q:"مدينة البتراء تقع في أي دولة؟", o:["مصر","الأردن","العراق","سوريا"], a:1, p:10 },
+  { q:"ما هي عملة الأردن؟", o:["الدولار","الدينار","الريال","الجنيه"], a:1, p:10 },
+  { q:"ما هو أكبر محيط في العالم؟", o:["الأطلسي","الهندي","المتجمد","الهادئ"], a:3, p:15 },
+  // اليوم 3
+  { q:"كم لوناً في قوس قزح؟", o:["خمسة","ستة","سبعة","تسعة"], a:2, p:10 },
+  { q:"كم عدد أرجل العنكبوت؟", o:["ستة","ثمانية","عشرة","اثنا عشر"], a:1, p:10 },
+  { q:"كم ضلعاً للشكل السداسي؟", o:["خمسة","ستة","سبعة","ثمانية"], a:1, p:10 },
+  // اليوم 4
+  { q:"أي عضو يضخّ الدم في الجسم؟", o:["الكبد","الرئتان","القلب","الدماغ"], a:2, p:10 },
+  { q:"كم دقيقة في الساعة؟", o:["ثلاثون","ستون","تسعون","مئة"], a:1, p:10 },
+  { q:"عند أي درجة يتجمّد الماء (مئوية)؟", o:["0","10","32","100"], a:0, p:15 },
+  // اليوم 5
+  { q:"ما هو أصغر عدد أولي؟", o:["0","1","2","3"], a:2, p:15 },
+  { q:"ما الذي يعطي النبات لونه الأخضر؟", o:["السكر","الكلوروفيل","الأكسجين","الماء"], a:1, p:15 },
+  { q:"البحر الميت معروف بأنه أخفض نقطة على ماذا؟", o:["القمر","اليابسة","البحر","الجبل"], a:1, p:15 },
+  // اليوم 6
+  { q:"ما هو أطول نهر في العالم؟", o:["الأمازون","النيل","اليانغتسي","الأردن"], a:1, p:15 },
+  { q:"كم عدد كواكب المجموعة الشمسية؟", o:["سبعة","ثمانية","تسعة","عشرة"], a:1, p:10 },
+  { q:"أي غاز يجعل البالون يطير؟", o:["الأكسجين","الهيليوم","ثاني أكسيد الكربون","الهواء"], a:1, p:10 },
+  // اليوم 7
+  { q:"كم عدد أسنان الإنسان البالغ؟", o:["28","30","32","34"], a:2, p:15 },
+  { q:"كم عدد عظام جسم الإنسان؟", o:["106","206","306","406"], a:1, p:20 },
+  { q:"ماذا يُسمّى الماء المتجمّد؟", o:["بخار","ثلج","غيمة","ضباب"], a:1, p:10 },
+];
+
+/* ========================================================================
+   التطبيق — مسابقة 7 أيام · 3 أسئلة يومياً · الأعلى نقاطاً يفوز
    ======================================================================== */
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -229,39 +258,47 @@ const AV = ["🦁","🦅","🐯","🦋","🌸","⭐","🐼","🦊","🐶","🐵"
 
 let boardState = {};
 let me = null;
-let current = null;
+let current = null;     // uid أثناء اللعب
 let listening = false;
 
 const configMissing = firebaseConfig.apiKey === "YOUR_API_KEY";
+
+/* ---------- منطق الأيام ---------- */
+function startOfDay(d){ return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime(); }
+function dayNumber(){
+  const start = startOfDay(new Date(START_DATE + "T00:00:00"));
+  const diff = Math.floor((startOfDay(new Date()) - start) / 86400000);
+  return diff + 1; // 1-based
+}
+function todaysIndices(){
+  const d = dayNumber();
+  if(d < 1 || d > DAYS) return [];
+  const s = (d-1)*PER_DAY;
+  return Array.from({length:PER_DAY}, (_,i)=> s+i).filter(i=> i < QUESTIONS.length);
+}
+function competitionEnded(){ return dayNumber() > DAYS; }
+function competitionStarted(){ return dayNumber() >= 1; }
 
 function avatarFor(uid){
   let h=0; for(const c of (uid||"")) h=(h*31+c.charCodeAt(0))>>>0;
   return AV[h % AV.length];
 }
-function nameFromUser(u){
-  return u.displayName || (u.email ? u.email.split("@")[0] : "لاعب");
-}
+function nameFromUser(u){ return u.displayName || (u.email ? u.email.split("@")[0] : "لاعب"); }
 function toast(msg){
-  toastEl.textContent = msg;
-  toastEl.classList.add("show");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(()=>toastEl.classList.remove("show"), 2400);
+  toastEl.textContent = msg; toastEl.classList.add("show");
+  clearTimeout(toast._t); toast._t = setTimeout(()=>toastEl.classList.remove("show"), 2600);
 }
 function spinner(text){
-  root.innerHTML = `<div class="loading">
-    <div class="spin"></div>
-    <p style="margin-top:14px">${text||"جاري التحميل…"}</p>
-  </div>`;
+  root.innerHTML = `<div class="loading"><div class="spin"></div><p style="margin-top:14px">${text||"جاري التحميل…"}</p></div>`;
 }
 
 async function ensureMyPlayer(){
   const ref = doc(db,"players",me.uid);
   const snap = await getDoc(ref);
   if(!snap.exists()){
-    await setDoc(ref,{ name:nameFromUser(me), email:me.email||"", correct:0, points:0, answered:[], won:false });
+    await setDoc(ref,{ name:nameFromUser(me), email:me.email||"", correct:0, points:0, answered:[], cliq:"" });
   }
 }
-
 function listen(){
   if(listening) return; listening = true;
   onSnapshot(collection(db,"players"), snap=>{
@@ -271,10 +308,9 @@ function listen(){
   });
 }
 
-async function resetMe(){
-  boardState[me.uid] = {...(boardState[me.uid]||{}), correct:0, points:0, answered:[], won:false};
-  try{ await updateDoc(doc(db,"players",me.uid), { correct:0, points:0, answered:[], won:false }); }
-  catch(e){ toast("تعذّر الحفظ — تحقق من الإعدادات"); }
+function rankedPlayers(){
+  return Object.entries(boardState).map(([uid,p])=>({uid,...p}))
+    .sort((a,b)=> b.points-a.points || b.correct-a.correct);
 }
 
 /* ---------- تسجيل الدخول ---------- */
@@ -286,7 +322,7 @@ function renderSignIn(){
       <div class="card winner-screen">
         <div class="trophy">🎮</div>
         <h2 style="color:var(--ink)">سجّل الدخول للعب</h2>
-        <p style="color:var(--muted)">بضغطة واحدة عبر Google. تنضم للوحة تلقائياً.</p>
+        <p style="color:var(--muted)">بضغطة واحدة عبر Google. تنضم للمسابقة تلقائياً.</p>
         <div style="height:18px"></div>
         <button class="btn" id="google">المتابعة عبر Google</button>
       </div>
@@ -296,45 +332,51 @@ function renderSignIn(){
     try{ await signInWithPopup(auth, provider); }
     catch(e){
       renderSignIn();
-      toast(e.code==="auth/unauthorized-domain"
-        ? "أضف هذا النطاق في إعدادات Firebase"
-        : "تم إلغاء تسجيل الدخول");
+      toast(e.code==="auth/unauthorized-domain" ? "أضف هذا النطاق في إعدادات Firebase" : "تم إلغاء تسجيل الدخول");
     }
   };
 }
 
-/* ---------- الرئيسية / لوحة الصدارة ---------- */
+/* ---------- الرئيسية ---------- */
 function renderHome(){
   if(configMissing){ root.innerHTML=`<div class="stack">${configWarn()}</div>`; return; }
   if(!me){ renderSignIn(); return; }
   current = null;
 
-  const ranked = Object.entries(boardState)
-    .map(([uid,p])=> ({uid, ...p}))
-    .sort((a,b)=> b.points-a.points || b.correct-a.correct);
+  const ranked = rankedPlayers();
+  const d = dayNumber();
+  const ended = competitionEnded();
+  const notStarted = d < 1;
 
-  const meData = boardState[me.uid] || {correct:0,points:0};
-  const iWon = meData.correct>=WIN_TARGET;
-  const winner = ranked.find(p=>p.correct>=WIN_TARGET);
+  // شاشة الفائز عند انتهاء المسابقة
+  if(ended && ranked.length){
+    renderWinner(ranked[0]);
+    return;
+  }
+
+  const meData = boardState[me.uid] || {correct:0,points:0,answered:[]};
+  const todays = todaysIndices();
+  const answeredToday = todays.filter(i=> (meData.answered||[]).includes(i));
+  const leftToday = todays.length - answeredToday.length;
 
   root.innerHTML = `
     <div class="stack">
-      ${winner ? winnerBanner(winner) : ""}
       <div class="card">
         <div class="topbar">
           <span class="qcount">${avatarFor(me.uid)} ${nameFromUser(me)}</span>
           <button class="back" id="out">تسجيل خروج</button>
         </div>
-        <div class="section-label">لوحة الصدارة</div>
+        <div class="daybar">
+          ${Array.from({length:DAYS},(_,i)=>`<span class="dot ${i+1<d?'done':''} ${i+1===d?'now':''}"></span>`).join("")}
+        </div>
+        <div class="section-label">${notStarted ? "المسابقة لم تبدأ بعد" : `اليوم ${d} من ${DAYS}`}</div>
         <div class="board">
           ${ranked.length ? ranked.map((p,i)=>`
             <div class="row ${p.uid===me.uid?'r1':''}">
               <div class="rank">${medal(i)}</div>
               <div class="who">
                 <b>${avatarFor(p.uid)} ${p.name}${p.uid===me.uid?' (أنت)':''}</b>
-                <small>${p.correct}/${WIN_TARGET} صح</small>
-                <div class="prog"><i style="width:${Math.min(100,(p.correct/WIN_TARGET)*100)}%"></i></div>
-                ${p.correct>=WIN_TARGET?`<div class="winner-tag">🏆 فاز بـ ${PRIZE}</div>`:""}
+                <small>${p.correct} إجابة صحيحة</small>
               </div>
               <div class="pts">${p.points}<span>نقطة</span></div>
             </div>`).join("")
@@ -342,31 +384,76 @@ function renderHome(){
         </div>
       </div>
       <div class="card winner-screen">
-        <div class="section-label" style="text-align:right">دورك</div>
-        <p style="color:var(--muted);margin-bottom:14px">${meData.correct}/${WIN_TARGET} صح · ${meData.points} نقطة</p>
-        ${iWon
-          ? `<button class="btn" id="play">🔁 العب من جديد</button>`
-          : `<button class="btn" id="play">${avatarFor(me.uid)} ابدأ اللعب</button>`}
-        <p style="color:var(--muted);font-size:13px;margin-top:12px">لازم تجاوب الأسئلة الخمسة كلها صح علشان تفوز</p>
+        <div class="section-label" style="text-align:right">أسئلة اليوم</div>
+        ${notStarted
+          ? `<p style="color:var(--muted)">ابدأ في ${START_DATE}.</p>`
+          : leftToday>0
+            ? `<p style="color:var(--muted);margin-bottom:14px">باقي لك ${leftToday} من ${todays.length} أسئلة اليوم</p>
+               <button class="btn" id="play">${avatarFor(me.uid)} العب أسئلة اليوم</button>`
+            : `<p style="color:var(--green);font-weight:600">✅ خلّصت أسئلة اليوم. رجاع بكرة!</p>`}
+        <p style="color:var(--muted);font-size:13px;margin-top:12px">الأعلى نقاطاً بعد ${DAYS} أيام يفوز بـ ${PRIZE}</p>
       </div>
     </div>`;
 
   document.getElementById("out").onclick = ()=> signOut(auth);
-  document.getElementById("play").onclick = async ()=>{
-    if(iWon || (meData.answered||[]).length){ await resetMe(); }
-    startQuiz();
-  };
+  const playBtn = document.getElementById("play");
+  if(playBtn) playBtn.onclick = ()=> startQuiz();
 }
 
 function medal(i){ return ["🥇","🥈","🥉"][i] || (i+1); }
 
-function winnerBanner(p){
-  return `<div class="card winner-screen">
-    <div class="trophy">🏆</div>
-    <h2>${avatarFor(p.uid)} ${p.name} فاز!</h2>
-    <div class="prize">${PRIZE}</div>
-    <p style="color:var(--muted)">أول من جاوب الأسئلة الخمسة كلها صح.</p>
-  </div>`;
+/* ---------- شاشة الفائز + أنميشن + رقم الكليك ---------- */
+function renderWinner(top){
+  current = null;
+  const iAmWinner = top.uid === me.uid;
+  const haveCliq = !!(boardState[me.uid]?.cliq);
+
+  root.innerHTML = `
+    <div class="stack">
+      <div class="card winner-screen big-win">
+        <div class="trophy bounce">🏆</div>
+        <h2>${avatarFor(top.uid)} ${top.name} فاز!</h2>
+        <div class="prize">${PRIZE}</div>
+        <p style="color:var(--muted)">أعلى نقاط بعد ${DAYS} أيام · ${top.points} نقطة</p>
+      </div>
+
+      ${iAmWinner ? (haveCliq
+        ? `<div class="card winner-screen">
+             <div class="trophy">✅</div>
+             <h3 style="color:var(--green)">تم استلام رقم الكليك</h3>
+             <p style="color:var(--muted)">سيتم تحويل ${PRIZE} على: <b style="color:var(--ink)">${boardState[me.uid].cliq}</b></p>
+           </div>`
+        : `<div class="card">
+             <div class="section-label">مبروك! أدخل رقم الكليك لتحويل المبلغ</div>
+             <input id="cliq" class="cliq-input" inputmode="text" placeholder="رقم أو اسم الكليك (CliQ)" />
+             <div style="height:10px"></div>
+             <button class="btn" id="saveCliq">إرسال للتحويل</button>
+           </div>`)
+        : `<div class="card">
+             <div class="topbar"><span class="qcount">${avatarFor(me.uid)} ${nameFromUser(me)}</span><button class="back" id="out2">تسجيل خروج</button></div>
+             <p style="color:var(--muted)">انتهت المسابقة. الفائز هو ${top.name}. حظاً أوفر المرة القادمة!</p>
+           </div>`}
+    </div>`;
+
+  launchConfetti();
+
+  const out2 = document.getElementById("out2");
+  if(out2) out2.onclick = ()=> signOut(auth);
+
+  const saveBtn = document.getElementById("saveCliq");
+  if(saveBtn){
+    saveBtn.onclick = async ()=>{
+      const val = (document.getElementById("cliq").value||"").trim();
+      if(val.length < 3){ toast("اكتب رقم/اسم الكليك بشكل صحيح"); return; }
+      saveBtn.disabled = true; saveBtn.textContent = "جارٍ الإرسال…";
+      try{
+        await updateDoc(doc(db,"players",me.uid), { cliq: val });
+        boardState[me.uid] = {...boardState[me.uid], cliq:val};
+        toast("تم الإرسال ✅");
+        renderWinner(top);
+      }catch(e){ toast("تعذّر الحفظ — حاول ثانية"); saveBtn.disabled=false; saveBtn.textContent="إرسال للتحويل"; }
+    };
+  }
 }
 
 function configWarn(){
@@ -379,40 +466,37 @@ function configWarn(){
 /* ---------- المسابقة ---------- */
 function nextQuestionIndex(){
   const answered = (boardState[me.uid]?.answered)||[];
-  for(let i=0;i<QUESTIONS.length;i++) if(!answered.includes(i)) return i;
+  for(const i of todaysIndices()) if(!answered.includes(i)) return i;
   return -1;
 }
-
-function startQuiz(){ current = me.uid; showQuestion(); }
-
+function startQuiz(){
+  if(competitionEnded() || !competitionStarted()){ renderHome(); return; }
+  current = me.uid; showQuestion();
+}
 function showQuestion(){
-  const data = boardState[me.uid] || {correct:0,points:0,answered:[]};
-  if(data.correct>=WIN_TARGET){ renderHome(); return; }
-
   const qi = nextQuestionIndex();
   if(qi === -1){ renderHome(); return; }
 
   const Q = QUESTIONS[qi];
-  const num = (data.answered?.length||0)+1;
+  const todays = todaysIndices();
+  const answered = (boardState[me.uid]?.answered)||[];
+  const num = todays.filter(i=>answered.includes(i)).length + 1;
+
   root.innerHTML = `
     <div class="card">
       <div class="topbar">
         <button class="back" id="back">← اللوحة</button>
-        <span class="qcount">سؤال ${num} من ${QUESTIONS.length}</span>
+        <span class="qcount">سؤال ${num} من ${todays.length} · اليوم ${dayNumber()}</span>
       </div>
       <div class="qmeta"><span class="name"><span class="av">${avatarFor(me.uid)}</span>${nameFromUser(me)}</span></div>
       <span class="qpts">+${Q.p} نقطة</span>
       <div class="question">${Q.q}</div>
-      <div class="opts">
-        ${Q.o.map((opt,i)=>`<button class="opt" data-i="${i}">${opt}</button>`).join("")}
-      </div>
+      <div class="opts">${Q.o.map((opt,i)=>`<button class="opt" data-i="${i}">${opt}</button>`).join("")}</div>
       <div id="after"></div>
     </div>`;
 
   document.getElementById("back").onclick = renderHome;
-  root.querySelectorAll(".opt").forEach(btn=>{
-    btn.onclick = ()=> answer(qi, parseInt(btn.dataset.i), btn);
-  });
+  root.querySelectorAll(".opt").forEach(btn=> btn.onclick = ()=> answer(qi, parseInt(btn.dataset.i), btn));
 }
 
 let locked=false;
@@ -425,37 +509,43 @@ async function answer(qi, choice, btn){
   btn.classList.add(correct?"correct":"wrong");
   if(!correct) opts[Q.a].classList.add("correct");
 
-  const after = document.getElementById("after");
-
-  if(!correct){
-    // خطأ = خسر الجولة. لازم كلهم صح.
-    after.innerHTML = `
-      <div class="feedback no">خطأ — لازم كل الأسئلة صح للفوز</div>
-      <button class="btn" id="retry">🔁 حاول من جديد</button>
-      <div style="height:8px"></div>
-      <button class="btn ghost" id="board2">رجوع للوحة</button>`;
-    document.getElementById("retry").onclick = async ()=>{ await resetMe(); locked=false; startQuiz(); };
-    document.getElementById("board2").onclick = async ()=>{ await resetMe(); locked=false; renderHome(); };
-    return;
-  }
-
   const cur = boardState[me.uid] || {correct:0,points:0,answered:[]};
-  const answered = [...(cur.answered||[]), qi];
-  const newCorrect = (cur.correct||0)+1;
-  const newPoints  = (cur.points||0)+Q.p;
-  const won = newCorrect>=WIN_TARGET;
-  boardState[me.uid] = {...cur, answered, correct:newCorrect, points:newPoints, won};
-  try{ await updateDoc(doc(db,"players",me.uid), { answered, correct:newCorrect, points:newPoints, won }); }
+  const answered = [...(cur.answered||[]), qi];           // كل سؤال يُحتسب مرة واحدة فقط
+  const newCorrect = (cur.correct||0)+(correct?1:0);
+  const newPoints  = (cur.points||0)+(correct?Q.p:0);
+  boardState[me.uid] = {...cur, answered, correct:newCorrect, points:newPoints};
+  try{ await updateDoc(doc(db,"players",me.uid), { answered, correct:newCorrect, points:newPoints }); }
   catch(e){ toast("تعذّر الحفظ — تحقق من القواعد"); }
 
-  after.innerHTML = `
-    <div class="feedback ok">صح! +${Q.p}</div>
-    <button class="btn" id="next">${won?'🏆 شوف النتيجة':'السؤال التالي'}</button>
+  const more = nextQuestionIndex() !== -1;
+  document.getElementById("after").innerHTML = `
+    <div class="feedback ${correct?'ok':'no'}">${correct?`صح! +${Q.p}`:"خطأ"}</div>
+    <button class="btn" id="next">${more?'السؤال التالي':'إنهاء اليوم'}</button>
     <div style="height:8px"></div>
     <button class="btn ghost" id="board2">رجوع للوحة</button>`;
   document.getElementById("board2").onclick = ()=>{ locked=false; renderHome(); };
-  document.getElementById("next").onclick = ()=>{ locked=false; won ? renderHome() : showQuestion(); };
-  if(won) toast(`مبروك! فزت بـ ${PRIZE} 🏆`);
+  document.getElementById("next").onclick = ()=>{ locked=false; more ? showQuestion() : renderHome(); };
+}
+
+/* ---------- أنميشن الاحتفال ---------- */
+function launchConfetti(){
+  const colors = ["#ffce4a","#46d49a","#a06bff","#ff6b8a","#f5a623","#7ad1ff"];
+  const layer = document.createElement("div");
+  layer.className = "confetti-layer";
+  document.body.appendChild(layer);
+  const N = 90;
+  for(let i=0;i<N;i++){
+    const p = document.createElement("i");
+    p.className = "confetti";
+    p.style.left = Math.random()*100 + "vw";
+    p.style.background = colors[i % colors.length];
+    p.style.animationDelay = (Math.random()*0.6) + "s";
+    p.style.animationDuration = (2.4 + Math.random()*1.8) + "s";
+    p.style.transform = `rotate(${Math.random()*360}deg)`;
+    p.style.width = p.style.height = (6 + Math.random()*8) + "px";
+    layer.appendChild(p);
+  }
+  setTimeout(()=> layer.remove(), 5200);
 }
 
 /* ---------- التشغيل ---------- */
@@ -473,13 +563,32 @@ async function answer(qi, choice, btn){
 </script>
 
 <style>
-  .spin{
-    width:42px;height:42px;border-radius:50%;margin:0 auto;
-    border:4px solid var(--line);border-top-color:var(--gold);
-    animation:spin .8s linear infinite;
-  }
+  .spin{width:42px;height:42px;border-radius:50%;margin:0 auto;border:4px solid var(--line);border-top-color:var(--gold);animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-  @media (prefers-reduced-motion:reduce){.spin{animation-duration:2s}}
+
+  /* مؤشر الأيام */
+  .daybar{display:flex;gap:8px;justify-content:center;margin:4px 0 16px}
+  .daybar .dot{width:12px;height:12px;border-radius:50%;background:var(--line);transition:.2s}
+  .daybar .dot.done{background:var(--green)}
+  .daybar .dot.now{background:var(--gold);box-shadow:0 0 0 4px rgba(255,206,74,.18)}
+
+  /* إدخال الكليك */
+  .cliq-input{
+    width:100%;background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+    border-radius:14px;padding:14px 16px;font-size:16px;font-family:'Cairo',sans-serif;text-align:right;
+  }
+  .cliq-input:focus{outline:none;border-color:var(--accent)}
+
+  /* احتفال الفائز */
+  .big-win{position:relative;overflow:hidden}
+  .bounce{animation:bounce 1s ease infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  .confetti-layer{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+  .confetti{position:absolute;top:-20px;border-radius:2px;animation:fall linear forwards}
+  @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
+  @media (prefers-reduced-motion:reduce){
+    .spin{animation-duration:2s}.bounce{animation:none}.confetti{display:none}
+  }
 </style>
 </body>
 </html>
