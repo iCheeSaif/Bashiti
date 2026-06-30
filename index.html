@@ -184,19 +184,21 @@ import {
   getFirestore, doc, getDoc, setDoc, updateDoc,
   collection, onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* ========================================================================
    1) FIREBASE CONFIG  — paste your own here (see README)
    ======================================================================== */
-  const firebaseConfig = {
-    apiKey: "AIzaSyCif-7UYefwhZTjpnLmjIAgG3bUidjv4ts",
-    authDomain: "familygame-2db98.firebaseapp.com",
-    projectId: "familygame-2db98",
-    storageBucket: "familygame-2db98.firebasestorage.app",
-    messagingSenderId: "1027018153882",
-    appId: "1:1027018153882:web:0445e2fd224c3523c1e423",
-    measurementId: "G-R6J7EX2M03"
-  };
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
 
 /* ========================================================================
    2) PLAYERS
@@ -260,10 +262,14 @@ const PRIZE = "20 JOD";
    ======================================================================== */
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
 const root = document.getElementById("app");
 const toastEl = document.getElementById("toast");
-let boardState = {};      // name -> {correct, points, answered:[]}
+let boardState = {};      // name -> {correct, points, answered:[], email}
 let current = null;       // active player name
+let me = null;            // signed-in google user
+let myPlayer = null;      // player name claimed by me
 
 const configMissing = firebaseConfig.apiKey === "YOUR_API_KEY";
 
@@ -279,7 +285,7 @@ async function ensurePlayers(){
     const ref = doc(db,"players",p.name);
     const snap = await getDoc(ref);
     if(!snap.exists()){
-      await setDoc(ref,{ name:p.name, correct:0, points:0, answered:[], won:false });
+      await setDoc(ref,{ name:p.name, correct:0, points:0, answered:[], won:false, email:"" });
     }
   }
 }
@@ -287,14 +293,77 @@ async function ensurePlayers(){
 function listen(){
   onSnapshot(collection(db,"players"), snap=>{
     snap.forEach(d=> boardState[d.id]=d.data());
+    recomputeMine();
     if(!current) renderHome();
   });
 }
 
+function recomputeMine(){
+  myPlayer = null;
+  if(!me) return;
+  for(const name in boardState){
+    if(boardState[name].email === me.email){ myPlayer = name; break; }
+  }
+}
+
 function avatarOf(name){ return (PLAYERS.find(p=>p.name===name)||{}).av || "🙂"; }
 
-/* ---------- HOME / LEADERBOARD ---------- */
+/* ---------- AUTH SCREENS ---------- */
+function renderSignIn(){
+  current = null;
+  root.innerHTML = `
+    <div class="stack">
+      ${configMissing ? configWarn() : ""}
+      <div class="card winner-screen">
+        <div class="trophy">🔑</div>
+        <h2 style="color:var(--ink)">Sign in to play</h2>
+        <p style="color:var(--muted)">Use your Google account. Then pick who you are.</p>
+        <div style="height:18px"></div>
+        <button class="btn" id="google">Continue with Google</button>
+      </div>
+    </div>`;
+  document.getElementById("google").onclick = async ()=>{
+    try{ await signInWithPopup(auth, provider); }
+    catch(e){ toast(e.code==="auth/unauthorized-domain"?"Add this domain in Firebase Auth settings":"Sign-in failed"); }
+  };
+}
+
+function renderClaim(){
+  current = null;
+  const taken = Object.values(boardState).filter(p=>p.email);
+  const free = PLAYERS.filter(p=> !(boardState[p.name]?.email));
+  root.innerHTML = `
+    <div class="stack">
+      <div class="card">
+        <div class="topbar">
+          <span class="qcount">${me.email}</span>
+          <button class="back" id="out">Sign out</button>
+        </div>
+        <div class="section-label">Who are you?</div>
+        ${free.length? `<div class="grid">
+          ${free.map(p=>`<button class="chip" data-name="${p.name}"><span class="av">${p.av}</span>${p.name}</button>`).join("")}
+        </div>` : `<p style="color:var(--muted)">All players taken. Ask family to free one in Firestore.</p>`}
+        ${taken.length? `<div class="section-label" style="margin-top:18px">Already taken</div>
+          <div class="board">${taken.map(p=>`<div class="row" style="opacity:.55"><div class="who"><b>${avatarOf(p.name)} ${p.name}</b><small>${p.email}</small></div></div>`).join("")}</div>`:""}
+      </div>
+    </div>`;
+  document.getElementById("out").onclick = ()=> signOut(auth);
+  root.querySelectorAll(".chip").forEach(b=>{
+    b.onclick = async ()=>{
+      const name = b.dataset.name;
+      try{
+        await updateDoc(doc(db,"players",name), { email: me.email });
+        myPlayer = name; toast(`You are ${name}`);
+      }catch(e){ toast("Could not claim — try again"); }
+    };
+  });
+}
+
+
 function renderHome(){
+  if(configMissing){ renderConfigOnly(); return; }
+  if(!me){ renderSignIn(); return; }
+  if(!myPlayer){ renderClaim(); return; }
   current = null;
   const ranked = PLAYERS
     .map(p=> ({...p, ...(boardState[p.name]||{correct:0,points:0,won:false})}))
@@ -304,16 +373,19 @@ function renderHome(){
 
   root.innerHTML = `
     <div class="stack">
-      ${configMissing ? configWarn() : ""}
       ${winner ? winnerBanner(winner) : ""}
       <div class="card">
+        <div class="topbar">
+          <span class="qcount">${avatarOf(myPlayer)} You are ${myPlayer}</span>
+          <button class="back" id="out">Sign out</button>
+        </div>
         <div class="section-label">Leaderboard</div>
         <div class="board">
           ${ranked.map((p,i)=>`
-            <div class="row ${i===0?'r1':''}">
+            <div class="row ${i===0?'r1':''} ${p.name===myPlayer?'r1':''}">
               <div class="rank">${medal(i)}</div>
               <div class="who">
-                <b>${p.av} ${p.name}</b>
+                <b>${p.av} ${p.name}${p.name===myPlayer?' (you)':''}</b>
                 <small>${p.correct}/${WIN_TARGET} correct</small>
                 <div class="prog"><i style="width:${Math.min(100,(p.correct/WIN_TARGET)*100)}%"></i></div>
                 ${p.correct>=WIN_TARGET?`<div class="winner-tag">🏆 Won ${PRIZE}</div>`:""}
@@ -323,21 +395,19 @@ function renderHome(){
           `).join("")}
         </div>
       </div>
-      <div class="card">
-        <div class="section-label">Who is playing?</div>
-        <div class="grid">
-          ${PLAYERS.map(p=>`
-            <button class="chip" data-name="${p.name}">
-              <span class="av">${p.av}</span>${p.name}
-            </button>
-          `).join("")}
-        </div>
+      <div class="card winner-screen">
+        <div class="section-label" style="text-align:left">Your turn</div>
+        <p style="color:var(--muted);margin-bottom:14px">Only you can answer for ${myPlayer}.</p>
+        <button class="btn" id="play"><span>${avatarOf(myPlayer)}</span> Play as ${myPlayer}</button>
       </div>
     </div>`;
 
-  root.querySelectorAll(".chip").forEach(b=>{
-    b.onclick = ()=> startQuiz(b.dataset.name);
-  });
+  document.getElementById("out").onclick = ()=>{ signOut(auth); };
+  document.getElementById("play").onclick = ()=> startQuiz(myPlayer);
+}
+
+function renderConfigOnly(){
+  root.innerHTML = `<div class="stack">${configWarn()}</div>`;
 }
 
 function medal(i){ return ["🥇","🥈","🥉"][i] || (i+1); }
@@ -368,6 +438,7 @@ function nextQuestionIndex(name){
 }
 
 function startQuiz(name){
+  if(name !== myPlayer){ toast("You can only play as yourself"); return; }
   current = name;
   showQuestion();
 }
@@ -456,15 +527,24 @@ async function answer(qi, choice, btn){
 
 /* ---------- BOOT ---------- */
 (async function boot(){
-  if(configMissing){ renderHome(); return; }
-  try{
-    await ensurePlayers();
-    listen();
-  }catch(e){
-    root.innerHTML = `<div class="card config-warn">
-      Could not reach Firebase. Check your config and Firestore rules.<br><br>${e.message}
-    </div>`;
-  }
+  if(configMissing){ renderConfigOnly(); return; }
+  let started = false;
+  onAuthStateChanged(auth, async (user)=>{
+    me = user;
+    if(!user){ myPlayer=null; renderSignIn(); return; }
+    if(!started){
+      started = true;
+      try{ await ensurePlayers(); listen(); }
+      catch(e){
+        root.innerHTML = `<div class="card config-warn">
+          Could not reach Firebase. Check config and Firestore rules.<br><br>${e.message}
+        </div>`;
+        return;
+      }
+    }
+    recomputeMine();
+    renderHome();
+  });
 })();
 </script>
 </body>
