@@ -201,6 +201,7 @@ const firebaseConfig = {
   measurementId: "G-R6J7EX2M03"
 };
 
+
 /* ========================================================================
    2) PLAYERS
    ======================================================================== */
@@ -259,7 +260,7 @@ const WIN_TARGET = 30;   // correct answers to win
 const PRIZE = "20 JOD";
 
 /* ========================================================================
-   App
+   App  — every signed-in Google user IS a player (no selecting)
    ======================================================================== */
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -267,109 +268,96 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 const root = document.getElementById("app");
 const toastEl = document.getElementById("toast");
-let boardState = {};      // name -> {correct, points, answered:[], email}
-let current = null;       // active player name
-let me = null;            // signed-in google user
-let myPlayer = null;      // player name claimed by me
+
+const AV = ["🦁","🦅","🐯","🦋","🌸","⭐","🐼","🦊","🐶","🐵","🦉","🐧","🐨","🦄","🐸","🐙"];
+const WELCOME_AVATAR = "🎮";
+
+let boardState = {};   // uid -> player data
+let me = null;         // google user
+let current = null;    // uid currently playing
+let listening = false;
 
 const configMissing = firebaseConfig.apiKey === "YOUR_API_KEY";
 
+function avatarFor(uid){
+  let h=0; for(const c of (uid||"")) h=(h*31+c.charCodeAt(0))>>>0;
+  return AV[h % AV.length];
+}
+function nameFromUser(u){
+  return u.displayName || (u.email ? u.email.split("@")[0] : "Player");
+}
 function toast(msg){
   toastEl.textContent = msg;
   toastEl.classList.add("show");
   clearTimeout(toast._t);
   toast._t = setTimeout(()=>toastEl.classList.remove("show"), 2200);
 }
+function spinner(text){
+  root.innerHTML = `<div class="loading">
+    <div class="spin"></div>
+    <p style="margin-top:14px">${text||"Loading…"}</p>
+  </div>`;
+}
 
-async function ensurePlayers(){
-  for(const p of PLAYERS){
-    const ref = doc(db,"players",p.name);
-    const snap = await getDoc(ref);
-    if(!snap.exists()){
-      await setDoc(ref,{ name:p.name, correct:0, points:0, answered:[], won:false, email:"" });
-    }
+/* one read + maybe one write — fast */
+async function ensureMyPlayer(){
+  const ref = doc(db,"players",me.uid);
+  const snap = await getDoc(ref);
+  if(!snap.exists()){
+    await setDoc(ref,{
+      name: nameFromUser(me), email: me.email||"",
+      correct:0, points:0, answered:[], won:false
+    });
   }
 }
 
 function listen(){
+  if(listening) return;
+  listening = true;
   onSnapshot(collection(db,"players"), snap=>{
+    boardState = {};
     snap.forEach(d=> boardState[d.id]=d.data());
-    recomputeMine();
     if(!current) renderHome();
   });
 }
 
-function recomputeMine(){
-  myPlayer = null;
-  if(!me) return;
-  for(const name in boardState){
-    if(boardState[name].email === me.email){ myPlayer = name; break; }
-  }
-}
-
-function avatarOf(name){ return (PLAYERS.find(p=>p.name===name)||{}).av || "🙂"; }
-
-/* ---------- AUTH SCREENS ---------- */
+/* ---------- SIGN IN ---------- */
 function renderSignIn(){
   current = null;
   root.innerHTML = `
     <div class="stack">
       ${configMissing ? configWarn() : ""}
       <div class="card winner-screen">
-        <div class="trophy">🔑</div>
+        <div class="trophy">${WELCOME_AVATAR}</div>
         <h2 style="color:var(--ink)">Sign in to play</h2>
-        <p style="color:var(--muted)">Use your Google account. Then pick who you are.</p>
+        <p style="color:var(--muted)">One tap with Google. You join the board automatically.</p>
         <div style="height:18px"></div>
         <button class="btn" id="google">Continue with Google</button>
       </div>
     </div>`;
   document.getElementById("google").onclick = async ()=>{
+    spinner("Signing in…");
     try{ await signInWithPopup(auth, provider); }
-    catch(e){ toast(e.code==="auth/unauthorized-domain"?"Add this domain in Firebase Auth settings":"Sign-in failed"); }
+    catch(e){
+      renderSignIn();
+      toast(e.code==="auth/unauthorized-domain"
+        ? "Add this domain in Firebase Auth settings"
+        : "Sign-in cancelled");
+    }
   };
 }
 
-function renderClaim(){
-  current = null;
-  const taken = Object.values(boardState).filter(p=>p.email);
-  const free = PLAYERS.filter(p=> !(boardState[p.name]?.email));
-  root.innerHTML = `
-    <div class="stack">
-      <div class="card">
-        <div class="topbar">
-          <span class="qcount">${me.email}</span>
-          <button class="back" id="out">Sign out</button>
-        </div>
-        <div class="section-label">Who are you?</div>
-        ${free.length? `<div class="grid">
-          ${free.map(p=>`<button class="chip" data-name="${p.name}"><span class="av">${p.av}</span>${p.name}</button>`).join("")}
-        </div>` : `<p style="color:var(--muted)">All players taken. Ask family to free one in Firestore.</p>`}
-        ${taken.length? `<div class="section-label" style="margin-top:18px">Already taken</div>
-          <div class="board">${taken.map(p=>`<div class="row" style="opacity:.55"><div class="who"><b>${avatarOf(p.name)} ${p.name}</b><small>${p.email}</small></div></div>`).join("")}</div>`:""}
-      </div>
-    </div>`;
-  document.getElementById("out").onclick = ()=> signOut(auth);
-  root.querySelectorAll(".chip").forEach(b=>{
-    b.onclick = async ()=>{
-      const name = b.dataset.name;
-      try{
-        await updateDoc(doc(db,"players",name), { email: me.email });
-        myPlayer = name; toast(`You are ${name}`);
-      }catch(e){ toast("Could not claim — try again"); }
-    };
-  });
-}
-
-
+/* ---------- HOME / LEADERBOARD ---------- */
 function renderHome(){
-  if(configMissing){ renderConfigOnly(); return; }
+  if(configMissing){ root.innerHTML=`<div class="stack">${configWarn()}</div>`; return; }
   if(!me){ renderSignIn(); return; }
-  if(!myPlayer){ renderClaim(); return; }
   current = null;
-  const ranked = PLAYERS
-    .map(p=> ({...p, ...(boardState[p.name]||{correct:0,points:0,won:false})}))
+
+  const ranked = Object.entries(boardState)
+    .map(([uid,p])=> ({uid, ...p}))
     .sort((a,b)=> b.points-a.points || b.correct-a.correct);
 
+  const meData = boardState[me.uid] || {correct:0,points:0};
   const winner = ranked.find(p=>p.correct>=WIN_TARGET);
 
   root.innerHTML = `
@@ -377,38 +365,34 @@ function renderHome(){
       ${winner ? winnerBanner(winner) : ""}
       <div class="card">
         <div class="topbar">
-          <span class="qcount">${avatarOf(myPlayer)} You are ${myPlayer}</span>
+          <span class="qcount">${avatarFor(me.uid)} ${nameFromUser(me)}</span>
           <button class="back" id="out">Sign out</button>
         </div>
         <div class="section-label">Leaderboard</div>
         <div class="board">
-          ${ranked.map((p,i)=>`
-            <div class="row ${i===0?'r1':''} ${p.name===myPlayer?'r1':''}">
+          ${ranked.length ? ranked.map((p,i)=>`
+            <div class="row ${p.uid===me.uid?'r1':''}">
               <div class="rank">${medal(i)}</div>
               <div class="who">
-                <b>${p.av} ${p.name}${p.name===myPlayer?' (you)':''}</b>
+                <b>${avatarFor(p.uid)} ${p.name}${p.uid===me.uid?' (you)':''}</b>
                 <small>${p.correct}/${WIN_TARGET} correct</small>
                 <div class="prog"><i style="width:${Math.min(100,(p.correct/WIN_TARGET)*100)}%"></i></div>
                 ${p.correct>=WIN_TARGET?`<div class="winner-tag">🏆 Won ${PRIZE}</div>`:""}
               </div>
               <div class="pts">${p.points}<span>points</span></div>
-            </div>
-          `).join("")}
+            </div>`).join("")
+          : `<p style="color:var(--muted)">No players yet. You're first!</p>`}
         </div>
       </div>
       <div class="card winner-screen">
         <div class="section-label" style="text-align:left">Your turn</div>
-        <p style="color:var(--muted);margin-bottom:14px">Only you can answer for ${myPlayer}.</p>
-        <button class="btn" id="play"><span>${avatarOf(myPlayer)}</span> Play as ${myPlayer}</button>
+        <p style="color:var(--muted);margin-bottom:14px">${meData.correct}/${WIN_TARGET} correct · ${meData.points} points</p>
+        <button class="btn" id="play">${avatarFor(me.uid)} Play</button>
       </div>
     </div>`;
 
-  document.getElementById("out").onclick = ()=>{ signOut(auth); };
-  document.getElementById("play").onclick = ()=> startQuiz(myPlayer);
-}
-
-function renderConfigOnly(){
-  root.innerHTML = `<div class="stack">${configWarn()}</div>`;
+  document.getElementById("out").onclick = ()=> signOut(auth);
+  document.getElementById("play").onclick = ()=> startQuiz();
 }
 
 function medal(i){ return ["🥇","🥈","🥉"][i] || (i+1); }
@@ -416,7 +400,7 @@ function medal(i){ return ["🥇","🥈","🥉"][i] || (i+1); }
 function winnerBanner(p){
   return `<div class="card winner-screen">
     <div class="trophy">🏆</div>
-    <h2>${p.av} ${p.name} wins!</h2>
+    <h2>${avatarFor(p.uid)} ${p.name} wins!</h2>
     <div class="prize">${PRIZE}</div>
     <p style="color:var(--muted)">Reached ${WIN_TARGET} correct answers first.</p>
   </div>`;
@@ -430,33 +414,28 @@ function configWarn(){
 }
 
 /* ---------- QUIZ ---------- */
-function nextQuestionIndex(name){
-  const answered = (boardState[name]?.answered)||[];
-  for(let i=0;i<QUESTIONS.length;i++){
-    if(!answered.includes(i)) return i;
-  }
-  return -1; // all done
+function nextQuestionIndex(){
+  const answered = (boardState[me.uid]?.answered)||[];
+  for(let i=0;i<QUESTIONS.length;i++) if(!answered.includes(i)) return i;
+  return -1;
 }
 
-function startQuiz(name){
-  if(name !== myPlayer){ toast("You can only play as yourself"); return; }
-  current = name;
+function startQuiz(){
+  current = me.uid;
   showQuestion();
 }
 
 function showQuestion(){
-  if(configMissing){ toast("Configure Firebase first"); renderHome(); return; }
-  const data = boardState[current] || {correct:0,points:0,answered:[]};
-
+  const data = boardState[me.uid] || {correct:0,points:0,answered:[]};
   if(data.correct>=WIN_TARGET){ renderHome(); return; }
 
-  const qi = nextQuestionIndex(current);
+  const qi = nextQuestionIndex();
   if(qi === -1){
     root.innerHTML = `
       <div class="card winner-screen">
         <div class="trophy">🎉</div>
         <h2 style="color:var(--ink)">All questions done!</h2>
-        <p style="color:var(--muted)">${avatarOf(current)} ${current} answered everything. ${data.correct} correct.</p>
+        <p style="color:var(--muted)">${data.correct} correct · ${data.points} points</p>
         <div style="height:16px"></div>
         <button class="btn" id="home">Back to board</button>
       </div>`;
@@ -471,12 +450,10 @@ function showQuestion(){
         <button class="back" id="back">← Board</button>
         <span class="qcount">${data.correct}/${WIN_TARGET} correct</span>
       </div>
-      <div class="qmeta">
-        <span class="name"><span class="av">${avatarOf(current)}</span>${current}</span>
-      </div>
+      <div class="qmeta"><span class="name"><span class="av">${avatarFor(me.uid)}</span>${nameFromUser(me)}</span></div>
       <span class="qpts">+${Q.p} points</span>
       <div class="question">${Q.q}</div>
-      <div class="opts" id="opts">
+      <div class="opts">
         ${Q.o.map((opt,i)=>`<button class="opt" data-i="${i}">${opt}</button>`).join("")}
       </div>
       <div id="after"></div>
@@ -490,8 +467,7 @@ function showQuestion(){
 
 let locked=false;
 async function answer(qi, choice, btn){
-  if(locked) return;
-  locked=true;
+  if(locked) return; locked=true;
   const Q = QUESTIONS[qi];
   const correct = choice === Q.a;
   const opts = root.querySelectorAll(".opt");
@@ -499,54 +475,53 @@ async function answer(qi, choice, btn){
   btn.classList.add(correct?"correct":"wrong");
   if(!correct) opts[Q.a].classList.add("correct");
 
-  // persist
-  const ref = doc(db,"players",current);
-  const cur = boardState[current] || {correct:0,points:0,answered:[]};
+  const cur = boardState[me.uid] || {correct:0,points:0,answered:[]};
   const answered = [...(cur.answered||[]), qi];
-  const newCorrect = (cur.correct||0) + (correct?1:0);
-  const newPoints  = (cur.points||0) + (correct?Q.p:0);
+  const newCorrect = (cur.correct||0)+(correct?1:0);
+  const newPoints  = (cur.points||0)+(correct?Q.p:0);
   const won = newCorrect>=WIN_TARGET;
-  try{
-    await updateDoc(ref,{ answered, correct:newCorrect, points:newPoints, won });
-    boardState[current] = {...cur, answered, correct:newCorrect, points:newPoints, won};
-  }catch(e){ toast("Save failed — check Firestore rules"); }
 
-  const after = document.getElementById("after");
-  after.innerHTML = `
+  boardState[me.uid] = {...cur, answered, correct:newCorrect, points:newPoints, won};
+  try{ await updateDoc(doc(db,"players",me.uid), { answered, correct:newCorrect, points:newPoints, won }); }
+  catch(e){ toast("Save failed — check rules"); }
+
+  document.getElementById("after").innerHTML = `
     <div class="feedback ${correct?'ok':'no'}">${correct?`Correct! +${Q.p}`:"Wrong"}</div>
-    <button class="btn" id="next">${won?`🏆 See result`:"Next question"}</button>
+    <button class="btn" id="next">${won?'🏆 See result':'Next question'}</button>
     <div style="height:8px"></div>
     <button class="btn ghost" id="board2">Back to board</button>`;
   document.getElementById("board2").onclick = ()=>{ locked=false; renderHome(); };
-  document.getElementById("next").onclick = ()=>{
-    locked=false;
-    if(won){ renderHome(); } else { showQuestion(); }
-  };
-
-  if(won) toast(`${current} hit ${WIN_TARGET} — wins ${PRIZE}!`);
+  document.getElementById("next").onclick = ()=>{ locked=false; won ? renderHome() : showQuestion(); };
+  if(won) toast(`You hit ${WIN_TARGET} — win ${PRIZE}!`);
 }
 
 /* ---------- BOOT ---------- */
-(async function boot(){
-  if(configMissing){ renderConfigOnly(); return; }
-  let started = false;
+(function boot(){
+  if(configMissing){ root.innerHTML=`<div class="stack">${configWarn()}</div>`; return; }
+  spinner("Connecting…");
   onAuthStateChanged(auth, async (user)=>{
     me = user;
-    if(!user){ myPlayer=null; renderSignIn(); return; }
-    if(!started){
-      started = true;
-      try{ await ensurePlayers(); listen(); }
-      catch(e){
-        root.innerHTML = `<div class="card config-warn">
-          Could not reach Firebase. Check config and Firestore rules.<br><br>${e.message}
-        </div>`;
-        return;
-      }
+    if(!user){ renderSignIn(); return; }
+    spinner("Loading board…");
+    try{
+      await ensureMyPlayer();
+      listen();
+      renderHome();
+    }catch(e){
+      root.innerHTML = `<div class="card config-warn">Could not reach Firebase. Check config and rules.<br><br>${e.message}</div>`;
     }
-    recomputeMine();
-    renderHome();
   });
 })();
 </script>
+
+<style>
+  .spin{
+    width:42px;height:42px;border-radius:50%;margin:0 auto;
+    border:4px solid var(--line);border-top-color:var(--gold);
+    animation:spin .8s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion:reduce){.spin{animation-duration:2s}}
+</style>
 </body>
 </html>
