@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Family Quiz — Race to 30</title>
+<title>مسابقة العائلة</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#1a1033;
@@ -25,7 +25,7 @@
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{
-    font-family:'Inter',system-ui,sans-serif;
+    font-family:'Cairo',system-ui,sans-serif;
     background:radial-gradient(1200px 600px at 50% -10%, #3a2270 0%, var(--bg) 60%);
     color:var(--ink);
     min-height:100vh;
@@ -33,7 +33,7 @@
     padding:24px 16px 64px;
   }
   .wrap{max-width:760px;margin:0 auto}
-  h1,h2,h3,.display{font-family:'Fredoka',sans-serif}
+  h1,h2,h3,.display{font-family:'Cairo',sans-serif}
   header.top{text-align:center;margin:12px 0 28px}
   .crown{font-size:40px;line-height:1}
   header.top h1{
@@ -73,13 +73,13 @@
     transition:transform .15s ease,border-color .15s ease;
   }
   .row:hover{transform:translateY(-1px);border-color:var(--accent)}
-  .rank{font-family:'Fredoka';font-weight:700;font-size:18px;text-align:center;color:var(--muted)}
+  .rank{font-family:'Cairo';font-weight:700;font-size:18px;text-align:center;color:var(--muted)}
   .row.r1 .rank{color:var(--gold)}
   .row.r1{border-color:var(--gold-deep);background:linear-gradient(90deg,rgba(255,206,74,.10),var(--bg2))}
   .who{display:flex;flex-direction:column}
   .who b{font-weight:600;font-size:16px}
   .who small{color:var(--muted);font-size:12px}
-  .pts{font-family:'Fredoka';font-weight:700;font-size:20px;color:var(--gold)}
+  .pts{font-family:'Cairo';font-weight:700;font-size:20px;color:var(--gold)}
   .pts span{font-size:11px;color:var(--muted);font-weight:500;display:block;text-align:right}
   .prog{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-top:6px;width:100%}
   .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:99px}
@@ -89,7 +89,7 @@
   .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
   .chip{
     background:var(--bg2);border:1px solid var(--line);color:var(--ink);
-    border-radius:14px;padding:16px 8px;font-family:'Fredoka';font-weight:600;
+    border-radius:14px;padding:16px 8px;font-family:'Cairo';font-weight:600;
     font-size:15px;cursor:pointer;transition:.15s;text-align:center;
   }
   .chip:hover{border-color:var(--accent);transform:translateY(-2px)}
@@ -99,15 +99,15 @@
 
   /* quiz */
   .qmeta{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-  .qmeta .name{font-family:'Fredoka';font-weight:600;font-size:18px}
+  .qmeta .name{font-family:'Cairo';font-weight:600;font-size:18px}
   .qmeta .name .av{margin-right:6px}
   .qcount{color:var(--muted);font-size:13px;font-weight:600}
   .qpts{background:rgba(255,206,74,.14);color:var(--gold);border:1px solid rgba(255,206,74,.3);
     border-radius:99px;padding:3px 12px;font-size:12px;font-weight:700;margin-bottom:14px;display:inline-block}
-  .question{font-family:'Fredoka';font-weight:600;font-size:clamp(20px,5vw,26px);line-height:1.3;margin-bottom:20px}
+  .question{font-family:'Cairo';font-weight:600;font-size:clamp(20px,5vw,26px);line-height:1.3;margin-bottom:20px}
   .opts{display:flex;flex-direction:column;gap:10px}
   .opt{
-    text-align:left;background:var(--bg2);border:1px solid var(--line);color:var(--ink);
+    text-align:right;background:var(--bg2);border:1px solid var(--line);color:var(--ink);
     border-radius:14px;padding:15px 18px;font-size:16px;font-weight:500;cursor:pointer;transition:.12s;
   }
   .opt:hover:not(:disabled){border-color:var(--accent);background:var(--card2)}
@@ -116,7 +116,7 @@
   .opt.wrong{border-color:var(--red);background:rgba(255,107,138,.16);color:#ffe1e8}
 
   .btn{
-    font-family:'Fredoka';font-weight:600;font-size:16px;
+    font-family:'Cairo';font-weight:600;font-size:16px;
     border:none;border-radius:14px;padding:14px 22px;cursor:pointer;width:100%;
     background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:#3a1f00;
     transition:.15s;
@@ -124,12 +124,12 @@
   .btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
   .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--muted)}
   .btn.ghost:hover{border-color:var(--accent);color:var(--ink)}
-  .feedback{text-align:center;font-family:'Fredoka';font-weight:600;font-size:18px;margin:6px 0}
+  .feedback{text-align:center;font-family:'Cairo';font-weight:600;font-size:18px;margin:6px 0}
   .feedback.ok{color:var(--green)}
   .feedback.no{color:var(--red)}
 
   .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-  .back{background:none;border:none;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;font-family:'Fredoka'}
+  .back{background:none;border:none;color:var(--muted);font-size:14px;font-weight:600;cursor:pointer;font-family:'Cairo'}
   .back:hover{color:var(--ink)}
 
   /* winner */
@@ -139,7 +139,7 @@
   .winner-screen .prize{
     display:inline-block;margin:14px 0;padding:12px 28px;
     background:linear-gradient(180deg,var(--gold),var(--gold-deep));color:#3a1f00;
-    border-radius:99px;font-family:'Fredoka';font-weight:700;font-size:24px;
+    border-radius:99px;font-family:'Cairo';font-weight:700;font-size:24px;
   }
 
   .toast{
@@ -164,16 +164,16 @@
 <div class="wrap">
   <header class="top">
     <div class="crown">👑</div>
-    <h1>Family Quiz</h1>
-    <p>Answer right. Climb the board. Race to 30.</p>
-    <div class="pill">🏆 First to 30 correct wins 20 JOD</div>
+    <h1>مسابقة العائلة</h1>
+    <p>جاوب صح. اصعد للقمة. كن الأول.</p>
+    <div class="pill">🏆 أول من يجاوب الخمسة كلها صح يربح 20 دينار</div>
   </header>
 
   <div id="app">
-    <div class="loading">Loading…</div>
+    <div class="loading">جاري التحميل…</div>
   </div>
 
-  <footer>Made for the family · Powered by Firebase</footer>
+  <footer>للعائلة · مدعوم بـ Firebase</footer>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -201,66 +201,22 @@ const firebaseConfig = {
   measurementId: "G-R6J7EX2M03"
 };
 
-
 /* ========================================================================
-   2) PLAYERS
-   ======================================================================== */
-const PLAYERS = [
-  { name:"Osama",   av:"🦁" },
-  { name:"Mohammad",av:"🦅" },
-  { name:"Maher",   av:"🐯" },
-  { name:"Suhad",   av:"🦋" },
-  { name:"Sumayah", av:"🌸" },
-  { name:"Sarah",   av:"⭐" },
-];
-
-/* ========================================================================
-   3) QUESTIONS  — edit freely. answer = index of correct option.
+   الأسئلة — عدّل كما تريد. a = رقم الإجابة الصحيحة (يبدأ من 0)
    ======================================================================== */
 const QUESTIONS = [
-  { q:"What is the capital of Jordan?", o:["Amman","Aqaba","Irbid","Zarqa"], a:0, p:10 },
-  { q:"How many continents are there?", o:["5","6","7","8"], a:2, p:10 },
-  { q:"What is H2O commonly called?", o:["Salt","Water","Sugar","Oil"], a:1, p:10 },
-  { q:"Which planet is known as the Red Planet?", o:["Venus","Jupiter","Mars","Saturn"], a:2, p:10 },
-  { q:"What is the largest ocean?", o:["Atlantic","Indian","Arctic","Pacific"], a:3, p:15 },
-  { q:"How many days in a leap year?", o:["365","366","367","364"], a:1, p:10 },
-  { q:"What gas do plants breathe in?", o:["Oxygen","Nitrogen","Carbon Dioxide","Helium"], a:2, p:15 },
-  { q:"Which is the longest river in the world?", o:["Amazon","Nile","Yangtze","Jordan"], a:1, p:15 },
-  { q:"How many colors in a rainbow?", o:["5","6","7","9"], a:2, p:10 },
-  { q:"What is the hardest natural substance?", o:["Gold","Iron","Diamond","Quartz"], a:2, p:15 },
-  { q:"Which sea borders Aqaba?", o:["Dead Sea","Red Sea","Black Sea","Caspian"], a:1, p:10 },
-  { q:"How many legs does a spider have?", o:["6","8","10","12"], a:1, p:10 },
-  { q:"What is the freezing point of water (°C)?", o:["0","10","32","100"], a:0, p:10 },
-  { q:"Which is the smallest prime number?", o:["0","1","2","3"], a:2, p:15 },
-  { q:"What gas makes up most of Earth's air?", o:["Oxygen","Nitrogen","CO2","Argon"], a:1, p:15 },
-  { q:"How many sides does a hexagon have?", o:["5","6","7","8"], a:1, p:10 },
-  { q:"What is the currency of Jordan?", o:["Dollar","Dinar","Riyal","Pound"], a:1, p:10 },
-  { q:"Which organ pumps blood?", o:["Liver","Lungs","Heart","Brain"], a:2, p:10 },
-  { q:"How many minutes in an hour?", o:["30","60","90","100"], a:1, p:10 },
-  { q:"What gas do we exhale most?", o:["Oxygen","Hydrogen","Carbon Dioxide","Neon"], a:2, p:10 },
-  { q:"The Dead Sea lowest point is mostly known for being?", o:["Highest","Lowest","Hottest","Coldest"], a:1, p:15 },
-  { q:"Which animal is the king of the jungle?", o:["Tiger","Elephant","Lion","Bear"], a:2, p:10 },
-  { q:"What gives plants green color?", o:["Glucose","Chlorophyll","Oxygen","Water"], a:1, p:15 },
-  { q:"How many wonders in the ancient world?", o:["5","6","7","9"], a:2, p:15 },
-  { q:"Petra is located in which country?", o:["Egypt","Jordan","Iraq","Syria"], a:1, p:10 },
-  { q:"What gas do we need to breathe?", o:["Oxygen","Nitrogen","CO2","Methane"], a:0, p:10 },
-  { q:"How many planets in our solar system?", o:["7","8","9","10"], a:1, p:10 },
-  { q:"Which is bigger, the sun or the moon?", o:["Moon","Sun","Same","Neither"], a:1, p:10 },
-  { q:"What gas is in balloons that float?", o:["Oxygen","Helium","CO2","Air"], a:1, p:10 },
-  { q:"How many teeth does an adult have?", o:["28","30","32","34"], a:2, p:15 },
-  { q:"What is the speed of light fastest in?", o:["Water","Glass","Vacuum","Air"], a:2, p:20 },
-  { q:"Which month has 28 or 29 days?", o:["January","February","March","April"], a:1, p:10 },
-  { q:"How many bones in the human body?", o:["106","206","306","406"], a:1, p:20 },
-  { q:"What is frozen water called?", o:["Steam","Ice","Cloud","Mist"], a:1, p:10 },
-  { q:"Which is a fruit?", o:["Carrot","Tomato","Potato","Onion"], a:1, p:15 },
-  { q:"How many hours in two days?", o:["24","36","48","60"], a:2, p:10 },
+  { q:"ما هي عاصمة الأردن؟", o:["عمّان","العقبة","إربد","الزرقاء"], a:0, p:20 },
+  { q:"كم عدد قارات العالم؟", o:["خمسة","ستة","سبعة","ثمانية"], a:2, p:20 },
+  { q:"أي كوكب يُعرف بالكوكب الأحمر؟", o:["الزهرة","المشتري","المريخ","زحل"], a:2, p:20 },
+  { q:"مدينة البتراء تقع في أي دولة؟", o:["مصر","الأردن","العراق","سوريا"], a:1, p:20 },
+  { q:"ما هي عملة الأردن؟", o:["الدولار","الدينار","الريال","الجنيه"], a:1, p:20 },
 ];
 
-const WIN_TARGET = 30;   // correct answers to win
-const PRIZE = "20 JOD";
+const WIN_TARGET = QUESTIONS.length;   // لازم يجاوب كل الأسئلة صح (5)
+const PRIZE = "20 دينار";
 
 /* ========================================================================
-   App  — every signed-in Google user IS a player (no selecting)
+   التطبيق — كل من يسجّل دخول عبر Google يصبح لاعباً تلقائياً
    ======================================================================== */
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -270,11 +226,10 @@ const root = document.getElementById("app");
 const toastEl = document.getElementById("toast");
 
 const AV = ["🦁","🦅","🐯","🦋","🌸","⭐","🐼","🦊","🐶","🐵","🦉","🐧","🐨","🦄","🐸","🐙"];
-const WELCOME_AVATAR = "🎮";
 
-let boardState = {};   // uid -> player data
-let me = null;         // google user
-let current = null;    // uid currently playing
+let boardState = {};
+let me = null;
+let current = null;
 let listening = false;
 
 const configMissing = firebaseConfig.apiKey === "YOUR_API_KEY";
@@ -284,36 +239,31 @@ function avatarFor(uid){
   return AV[h % AV.length];
 }
 function nameFromUser(u){
-  return u.displayName || (u.email ? u.email.split("@")[0] : "Player");
+  return u.displayName || (u.email ? u.email.split("@")[0] : "لاعب");
 }
 function toast(msg){
   toastEl.textContent = msg;
   toastEl.classList.add("show");
   clearTimeout(toast._t);
-  toast._t = setTimeout(()=>toastEl.classList.remove("show"), 2200);
+  toast._t = setTimeout(()=>toastEl.classList.remove("show"), 2400);
 }
 function spinner(text){
   root.innerHTML = `<div class="loading">
     <div class="spin"></div>
-    <p style="margin-top:14px">${text||"Loading…"}</p>
+    <p style="margin-top:14px">${text||"جاري التحميل…"}</p>
   </div>`;
 }
 
-/* one read + maybe one write — fast */
 async function ensureMyPlayer(){
   const ref = doc(db,"players",me.uid);
   const snap = await getDoc(ref);
   if(!snap.exists()){
-    await setDoc(ref,{
-      name: nameFromUser(me), email: me.email||"",
-      correct:0, points:0, answered:[], won:false
-    });
+    await setDoc(ref,{ name:nameFromUser(me), email:me.email||"", correct:0, points:0, answered:[], won:false });
   }
 }
 
 function listen(){
-  if(listening) return;
-  listening = true;
+  if(listening) return; listening = true;
   onSnapshot(collection(db,"players"), snap=>{
     boardState = {};
     snap.forEach(d=> boardState[d.id]=d.data());
@@ -321,33 +271,39 @@ function listen(){
   });
 }
 
-/* ---------- SIGN IN ---------- */
+async function resetMe(){
+  boardState[me.uid] = {...(boardState[me.uid]||{}), correct:0, points:0, answered:[], won:false};
+  try{ await updateDoc(doc(db,"players",me.uid), { correct:0, points:0, answered:[], won:false }); }
+  catch(e){ toast("تعذّر الحفظ — تحقق من الإعدادات"); }
+}
+
+/* ---------- تسجيل الدخول ---------- */
 function renderSignIn(){
   current = null;
   root.innerHTML = `
     <div class="stack">
       ${configMissing ? configWarn() : ""}
       <div class="card winner-screen">
-        <div class="trophy">${WELCOME_AVATAR}</div>
-        <h2 style="color:var(--ink)">Sign in to play</h2>
-        <p style="color:var(--muted)">One tap with Google. You join the board automatically.</p>
+        <div class="trophy">🎮</div>
+        <h2 style="color:var(--ink)">سجّل الدخول للعب</h2>
+        <p style="color:var(--muted)">بضغطة واحدة عبر Google. تنضم للوحة تلقائياً.</p>
         <div style="height:18px"></div>
-        <button class="btn" id="google">Continue with Google</button>
+        <button class="btn" id="google">المتابعة عبر Google</button>
       </div>
     </div>`;
   document.getElementById("google").onclick = async ()=>{
-    spinner("Signing in…");
+    spinner("جاري تسجيل الدخول…");
     try{ await signInWithPopup(auth, provider); }
     catch(e){
       renderSignIn();
       toast(e.code==="auth/unauthorized-domain"
-        ? "Add this domain in Firebase Auth settings"
-        : "Sign-in cancelled");
+        ? "أضف هذا النطاق في إعدادات Firebase"
+        : "تم إلغاء تسجيل الدخول");
     }
   };
 }
 
-/* ---------- HOME / LEADERBOARD ---------- */
+/* ---------- الرئيسية / لوحة الصدارة ---------- */
 function renderHome(){
   if(configMissing){ root.innerHTML=`<div class="stack">${configWarn()}</div>`; return; }
   if(!me){ renderSignIn(); return; }
@@ -358,6 +314,7 @@ function renderHome(){
     .sort((a,b)=> b.points-a.points || b.correct-a.correct);
 
   const meData = boardState[me.uid] || {correct:0,points:0};
+  const iWon = meData.correct>=WIN_TARGET;
   const winner = ranked.find(p=>p.correct>=WIN_TARGET);
 
   root.innerHTML = `
@@ -366,33 +323,39 @@ function renderHome(){
       <div class="card">
         <div class="topbar">
           <span class="qcount">${avatarFor(me.uid)} ${nameFromUser(me)}</span>
-          <button class="back" id="out">Sign out</button>
+          <button class="back" id="out">تسجيل خروج</button>
         </div>
-        <div class="section-label">Leaderboard</div>
+        <div class="section-label">لوحة الصدارة</div>
         <div class="board">
           ${ranked.length ? ranked.map((p,i)=>`
             <div class="row ${p.uid===me.uid?'r1':''}">
               <div class="rank">${medal(i)}</div>
               <div class="who">
-                <b>${avatarFor(p.uid)} ${p.name}${p.uid===me.uid?' (you)':''}</b>
-                <small>${p.correct}/${WIN_TARGET} correct</small>
+                <b>${avatarFor(p.uid)} ${p.name}${p.uid===me.uid?' (أنت)':''}</b>
+                <small>${p.correct}/${WIN_TARGET} صح</small>
                 <div class="prog"><i style="width:${Math.min(100,(p.correct/WIN_TARGET)*100)}%"></i></div>
-                ${p.correct>=WIN_TARGET?`<div class="winner-tag">🏆 Won ${PRIZE}</div>`:""}
+                ${p.correct>=WIN_TARGET?`<div class="winner-tag">🏆 فاز بـ ${PRIZE}</div>`:""}
               </div>
-              <div class="pts">${p.points}<span>points</span></div>
+              <div class="pts">${p.points}<span>نقطة</span></div>
             </div>`).join("")
-          : `<p style="color:var(--muted)">No players yet. You're first!</p>`}
+          : `<p style="color:var(--muted)">لا يوجد لاعبون بعد. أنت الأول!</p>`}
         </div>
       </div>
       <div class="card winner-screen">
-        <div class="section-label" style="text-align:left">Your turn</div>
-        <p style="color:var(--muted);margin-bottom:14px">${meData.correct}/${WIN_TARGET} correct · ${meData.points} points</p>
-        <button class="btn" id="play">${avatarFor(me.uid)} Play</button>
+        <div class="section-label" style="text-align:right">دورك</div>
+        <p style="color:var(--muted);margin-bottom:14px">${meData.correct}/${WIN_TARGET} صح · ${meData.points} نقطة</p>
+        ${iWon
+          ? `<button class="btn" id="play">🔁 العب من جديد</button>`
+          : `<button class="btn" id="play">${avatarFor(me.uid)} ابدأ اللعب</button>`}
+        <p style="color:var(--muted);font-size:13px;margin-top:12px">لازم تجاوب الأسئلة الخمسة كلها صح علشان تفوز</p>
       </div>
     </div>`;
 
   document.getElementById("out").onclick = ()=> signOut(auth);
-  document.getElementById("play").onclick = ()=> startQuiz();
+  document.getElementById("play").onclick = async ()=>{
+    if(iWon || (meData.answered||[]).length){ await resetMe(); }
+    startQuiz();
+  };
 }
 
 function medal(i){ return ["🥇","🥈","🥉"][i] || (i+1); }
@@ -400,58 +363,45 @@ function medal(i){ return ["🥇","🥈","🥉"][i] || (i+1); }
 function winnerBanner(p){
   return `<div class="card winner-screen">
     <div class="trophy">🏆</div>
-    <h2>${avatarFor(p.uid)} ${p.name} wins!</h2>
+    <h2>${avatarFor(p.uid)} ${p.name} فاز!</h2>
     <div class="prize">${PRIZE}</div>
-    <p style="color:var(--muted)">Reached ${WIN_TARGET} correct answers first.</p>
+    <p style="color:var(--muted)">أول من جاوب الأسئلة الخمسة كلها صح.</p>
   </div>`;
 }
 
 function configWarn(){
   return `<div class="config-warn">
-    ⚠️ Firebase not configured. Open <code>index.html</code> and replace
-    <code>firebaseConfig</code> with your project keys. See the README.
+    ⚠️ لم يتم إعداد Firebase. افتح <code>index.html</code> واستبدل
+    <code>firebaseConfig</code> بمفاتيح مشروعك. راجع ملف README.
   </div>`;
 }
 
-/* ---------- QUIZ ---------- */
+/* ---------- المسابقة ---------- */
 function nextQuestionIndex(){
   const answered = (boardState[me.uid]?.answered)||[];
   for(let i=0;i<QUESTIONS.length;i++) if(!answered.includes(i)) return i;
   return -1;
 }
 
-function startQuiz(){
-  current = me.uid;
-  showQuestion();
-}
+function startQuiz(){ current = me.uid; showQuestion(); }
 
 function showQuestion(){
   const data = boardState[me.uid] || {correct:0,points:0,answered:[]};
   if(data.correct>=WIN_TARGET){ renderHome(); return; }
 
   const qi = nextQuestionIndex();
-  if(qi === -1){
-    root.innerHTML = `
-      <div class="card winner-screen">
-        <div class="trophy">🎉</div>
-        <h2 style="color:var(--ink)">All questions done!</h2>
-        <p style="color:var(--muted)">${data.correct} correct · ${data.points} points</p>
-        <div style="height:16px"></div>
-        <button class="btn" id="home">Back to board</button>
-      </div>`;
-    document.getElementById("home").onclick = renderHome;
-    return;
-  }
+  if(qi === -1){ renderHome(); return; }
 
   const Q = QUESTIONS[qi];
+  const num = (data.answered?.length||0)+1;
   root.innerHTML = `
     <div class="card">
       <div class="topbar">
-        <button class="back" id="back">← Board</button>
-        <span class="qcount">${data.correct}/${WIN_TARGET} correct</span>
+        <button class="back" id="back">← اللوحة</button>
+        <span class="qcount">سؤال ${num} من ${QUESTIONS.length}</span>
       </div>
       <div class="qmeta"><span class="name"><span class="av">${avatarFor(me.uid)}</span>${nameFromUser(me)}</span></div>
-      <span class="qpts">+${Q.p} points</span>
+      <span class="qpts">+${Q.p} نقطة</span>
       <div class="question">${Q.q}</div>
       <div class="opts">
         ${Q.o.map((opt,i)=>`<button class="opt" data-i="${i}">${opt}</button>`).join("")}
@@ -475,41 +425,49 @@ async function answer(qi, choice, btn){
   btn.classList.add(correct?"correct":"wrong");
   if(!correct) opts[Q.a].classList.add("correct");
 
+  const after = document.getElementById("after");
+
+  if(!correct){
+    // خطأ = خسر الجولة. لازم كلهم صح.
+    after.innerHTML = `
+      <div class="feedback no">خطأ — لازم كل الأسئلة صح للفوز</div>
+      <button class="btn" id="retry">🔁 حاول من جديد</button>
+      <div style="height:8px"></div>
+      <button class="btn ghost" id="board2">رجوع للوحة</button>`;
+    document.getElementById("retry").onclick = async ()=>{ await resetMe(); locked=false; startQuiz(); };
+    document.getElementById("board2").onclick = async ()=>{ await resetMe(); locked=false; renderHome(); };
+    return;
+  }
+
   const cur = boardState[me.uid] || {correct:0,points:0,answered:[]};
   const answered = [...(cur.answered||[]), qi];
-  const newCorrect = (cur.correct||0)+(correct?1:0);
-  const newPoints  = (cur.points||0)+(correct?Q.p:0);
+  const newCorrect = (cur.correct||0)+1;
+  const newPoints  = (cur.points||0)+Q.p;
   const won = newCorrect>=WIN_TARGET;
-
   boardState[me.uid] = {...cur, answered, correct:newCorrect, points:newPoints, won};
   try{ await updateDoc(doc(db,"players",me.uid), { answered, correct:newCorrect, points:newPoints, won }); }
-  catch(e){ toast("Save failed — check rules"); }
+  catch(e){ toast("تعذّر الحفظ — تحقق من القواعد"); }
 
-  document.getElementById("after").innerHTML = `
-    <div class="feedback ${correct?'ok':'no'}">${correct?`Correct! +${Q.p}`:"Wrong"}</div>
-    <button class="btn" id="next">${won?'🏆 See result':'Next question'}</button>
+  after.innerHTML = `
+    <div class="feedback ok">صح! +${Q.p}</div>
+    <button class="btn" id="next">${won?'🏆 شوف النتيجة':'السؤال التالي'}</button>
     <div style="height:8px"></div>
-    <button class="btn ghost" id="board2">Back to board</button>`;
+    <button class="btn ghost" id="board2">رجوع للوحة</button>`;
   document.getElementById("board2").onclick = ()=>{ locked=false; renderHome(); };
   document.getElementById("next").onclick = ()=>{ locked=false; won ? renderHome() : showQuestion(); };
-  if(won) toast(`You hit ${WIN_TARGET} — win ${PRIZE}!`);
+  if(won) toast(`مبروك! فزت بـ ${PRIZE} 🏆`);
 }
 
-/* ---------- BOOT ---------- */
+/* ---------- التشغيل ---------- */
 (function boot(){
   if(configMissing){ root.innerHTML=`<div class="stack">${configWarn()}</div>`; return; }
-  spinner("Connecting…");
+  spinner("جاري الاتصال…");
   onAuthStateChanged(auth, async (user)=>{
     me = user;
     if(!user){ renderSignIn(); return; }
-    spinner("Loading board…");
-    try{
-      await ensureMyPlayer();
-      listen();
-      renderHome();
-    }catch(e){
-      root.innerHTML = `<div class="card config-warn">Could not reach Firebase. Check config and rules.<br><br>${e.message}</div>`;
-    }
+    spinner("تحميل اللوحة…");
+    try{ await ensureMyPlayer(); listen(); renderHome(); }
+    catch(e){ root.innerHTML = `<div class="card config-warn">تعذّر الوصول إلى Firebase. تحقق من الإعدادات والقواعد.<br><br>${e.message}</div>`; }
   });
 })();
 </script>
